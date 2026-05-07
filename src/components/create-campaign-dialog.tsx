@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { FileText, Loader2, Plus } from 'lucide-react'
 import { createCampaign } from '@/lib/actions'
 import { createClient } from '@/lib/client'
 import { Button } from '@/components/ui/button'
@@ -10,11 +11,9 @@ import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { PremiumDialogFrame } from '@/components/premium-dialog'
 import type { Brand } from '@/lib/types'
 
 export function CreateCampaignDialog() {
@@ -49,37 +48,35 @@ export function CreateCampaignDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white shadow-lg shadow-blue-500/20 cursor-pointer" />}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 mr-2">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          New Campaign
+      <DialogTrigger render={<Button className="cursor-pointer bg-emerald-400 font-black text-slate-950 shadow-lg shadow-emerald-950/20 hover:bg-emerald-300" />}>
+        <Plus className="mr-2 size-4" />
+        New Campaign
       </DialogTrigger>
-      <DialogContent className="bg-white border-zinc-200 shadow-xl">
-        <DialogHeader>
-          <DialogTitle className="text-zinc-900">Create Campaign</DialogTitle>
-          <DialogDescription className="text-zinc-500">
-            Create a new influencer campaign for a brand.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <DialogContent className="max-w-[calc(100%-2rem)] border-0 bg-transparent p-0 shadow-none ring-0 sm:max-w-3xl">
+        <PremiumDialogFrame
+          icon={FileText}
+          eyebrow="Campaign pipeline"
+          title="Create Campaign"
+          description="Create a campaign workspace and connect it to the right brand."
+          accent="blue"
+        >
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-zinc-700">Campaign Name</Label>
+            <Label htmlFor="name" className="text-sm font-black text-slate-800">Campaign Name</Label>
             <Input
               id="name"
               name="name"
               placeholder="e.g. Summer Launch 2026"
               required
-              className="bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-400 focus:border-violet-500/50"
+              className="h-12 rounded-lg border-slate-200 bg-slate-50 text-base font-semibold text-slate-950 placeholder:text-slate-400 focus:border-emerald-500/50"
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-zinc-700">Brand</Label>
+            <Label className="text-sm font-black text-slate-800">Brand</Label>
             <select
               name="brand_id"
               required
-              className="w-full rounded-md bg-white border border-zinc-200 text-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50"
+              className="h-12 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-base font-semibold text-slate-950 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
             >
               <option value="">Select a brand</option>
               {brands.map((brand) => (
@@ -90,11 +87,13 @@ export function CreateCampaignDialog() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white cursor-pointer"
+            className="h-12 w-full cursor-pointer bg-slate-950 text-base font-black text-white shadow-lg shadow-slate-950/15 hover:bg-slate-800"
           >
-            {loading ? 'Creating...' : 'Create Campaign'}
+            {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+            {loading ? 'Creating' : 'Create Campaign'}
           </Button>
         </form>
+        </PremiumDialogFrame>
       </DialogContent>
     </Dialog>
   )

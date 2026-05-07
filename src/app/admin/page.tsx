@@ -1,5 +1,6 @@
+import { Building2, FileText, Users, Zap } from 'lucide-react'
 import { createClient } from '@/lib/server'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { GlassPanel, MetricCard, PageHeader, PageSurface } from '@/components/premium-ui'
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -16,67 +17,63 @@ export default async function AdminDashboard() {
 
   const stats = [
     {
-      title: 'Total Brands',
+      title: 'Total brands',
       value: brandsCount || 0,
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-          <path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z" />
-          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-        </svg>
-      ),
-      gradient: 'from-violet-500 to-purple-600',
-      shadow: 'shadow-violet-500/20',
+      detail: 'Client workspaces',
+      icon: Building2,
+      tone: 'violet' as const,
     },
     {
-      title: 'Active Campaigns',
+      title: 'Campaigns',
       value: campaignsCount || 0,
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-          <polyline points="14,2 14,8 20,8" />
-        </svg>
-      ),
-      gradient: 'from-blue-500 to-cyan-500',
-      shadow: 'shadow-blue-500/20',
+      detail: 'Briefs in motion',
+      icon: FileText,
+      tone: 'blue' as const,
     },
     {
-      title: 'Influencer Pool',
+      title: 'Creator pool',
       value: influencersCount || 0,
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-      ),
-      gradient: 'from-emerald-500 to-green-500',
-      shadow: 'shadow-emerald-500/20',
+      detail: 'Available talent',
+      icon: Users,
+      tone: 'emerald' as const,
     },
   ]
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-zinc-900">Dashboard</h1>
-        <p className="text-zinc-500 mt-1">Overview of your influencer campaign portal</p>
-      </div>
+    <PageSurface>
+      <PageHeader
+        eyebrow="Agency overview"
+        title="Campaign command center"
+        description="A focused view of your client brands, active campaigns, and creator inventory."
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {stats.map((stat) => (
-          <Card key={stat.title} className="bg-white border-zinc-200 hover:border-zinc-300 transition-all duration-300 shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-zinc-500">{stat.title}</CardTitle>
-              <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg ${stat.shadow}`}>
-                <span className="text-white">{stat.icon}</span>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-zinc-900">{stat.value}</div>
-            </CardContent>
-          </Card>
+          <MetricCard key={stat.title} {...stat} />
         ))}
       </div>
-    </div>
+
+      <GlassPanel className="overflow-hidden bg-slate-950 text-white">
+        <div className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-emerald-400 text-slate-950">
+              <Zap className="size-5" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black tracking-normal text-white">Operational flow</h2>
+              <p className="text-sm font-medium text-slate-400">From client setup to creator approvals.</p>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-3 sm:grid-cols-4">
+            {['Create brand', 'Launch campaign', 'Add creators', 'Track decisions'].map((item, index) => (
+              <div key={item} className="rounded-lg border border-white/10 bg-white/[0.07] p-4">
+                <p className="text-xs font-black text-emerald-300">0{index + 1}</p>
+                <p className="mt-2 text-sm font-black text-white">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </GlassPanel>
+    </PageSurface>
   )
 }

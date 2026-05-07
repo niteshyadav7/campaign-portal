@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Building2, Loader2, Plus } from 'lucide-react'
 import { createBrand } from '@/lib/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,11 +10,9 @@ import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { PremiumDialogFrame } from '@/components/premium-dialog'
 
 export function CreateBrandDialog() {
   const [open, setOpen] = useState(false)
@@ -37,39 +36,39 @@ export function CreateBrandDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button className="bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white shadow-lg shadow-violet-500/20 cursor-pointer" />}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 mr-2">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Add Brand
+      <DialogTrigger render={<Button className="cursor-pointer bg-emerald-400 font-black text-slate-950 shadow-lg shadow-emerald-950/20 hover:bg-emerald-300" />}>
+        <Plus className="mr-2 size-4" />
+        Add Brand
       </DialogTrigger>
-      <DialogContent className="bg-white border-zinc-200 shadow-xl">
-        <DialogHeader>
-          <DialogTitle className="text-zinc-900">Create New Brand</DialogTitle>
-          <DialogDescription className="text-zinc-500">
-            Add a new client brand to your portal.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <DialogContent className="max-w-[calc(100%-2rem)] border-0 bg-transparent p-0 shadow-none ring-0 sm:max-w-3xl">
+        <PremiumDialogFrame
+          icon={Building2}
+          eyebrow="Client workspace"
+          title="Create New Brand"
+          description="Add a client account and prepare a dedicated review portal."
+          accent="violet"
+        >
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-zinc-700">Brand Name</Label>
+            <Label htmlFor="name" className="text-sm font-black text-slate-800">Brand Name</Label>
             <Input
               id="name"
               name="name"
               placeholder="e.g. Nike, Coca-Cola"
               required
-              className="bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-400 focus:border-violet-500/50"
+              className="h-12 rounded-lg border-slate-200 bg-slate-50 text-base font-semibold text-slate-950 placeholder:text-slate-400 focus:border-emerald-500/50"
             />
           </div>
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white cursor-pointer"
+            className="h-12 w-full cursor-pointer bg-slate-950 text-base font-black text-white shadow-lg shadow-slate-950/15 hover:bg-slate-800"
           >
-            {loading ? 'Creating...' : 'Create Brand'}
+            {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+            {loading ? 'Creating' : 'Create Brand'}
           </Button>
         </form>
+        </PremiumDialogFrame>
       </DialogContent>
     </Dialog>
   )

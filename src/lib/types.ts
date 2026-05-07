@@ -11,6 +11,7 @@ export interface Profile {
 export interface Brand {
   id: string
   name: string
+  extra_fields: Record<string, string> | null
   created_at: string
 }
 
@@ -19,6 +20,7 @@ export interface Campaign {
   brand_id: string
   name: string
   status: string
+  extra_fields: Record<string, string> | null
   created_at: string
 }
 
@@ -29,6 +31,7 @@ export interface Influencer {
   followers: number
   location: string | null
   contact_number: string | null
+  extra_fields: Record<string, string> | null
   created_at: string
 }
 

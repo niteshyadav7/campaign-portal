@@ -14,6 +14,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TABLE public.brands (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
+    extra_fields JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -32,6 +33,7 @@ CREATE TABLE public.campaigns (
     brand_id UUID NOT NULL REFERENCES public.brands(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     status TEXT DEFAULT 'active',
+    extra_fields JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -43,6 +45,7 @@ CREATE TABLE public.influencers (
     followers INTEGER DEFAULT 0,
     location TEXT,
     contact_number TEXT,
+    extra_fields JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

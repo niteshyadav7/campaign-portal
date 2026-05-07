@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/server'
 import { AdminSidebar } from '@/components/admin-sidebar'
+import { WorkspaceTopbar } from '@/components/workspace-topbar'
 
 export default async function AdminLayout({
   children,
@@ -21,13 +22,14 @@ export default async function AdminLayout({
   if (profile?.role !== 'super_admin') redirect('/dashboard')
 
   return (
-    <div className="flex h-screen bg-zinc-50">
+    <div className="flex h-screen bg-background">
       <AdminSidebar user={user} profile={profile} />
-      <main className="flex-1 overflow-auto">
-        <div className="p-8">
+      <div className="workspace-shell flex min-w-0 flex-1 flex-col">
+        <WorkspaceTopbar workspaceName="1to7 Media" mode="Agency" userEmail={user.email} />
+        <main className="min-h-0 flex-1 overflow-auto">
           {children}
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   )
 }

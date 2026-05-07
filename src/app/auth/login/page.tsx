@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Loader2, LockKeyhole, Mail, Users } from 'lucide-react'
 import { createClient } from '@/lib/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,7 +22,7 @@ export default function LoginPage() {
     setError(null)
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
@@ -30,73 +31,84 @@ export default function LoginPage() {
       setError(error.message)
       setLoading(false)
     } else {
-      router.push('/')
-      router.refresh()
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single()
+
+      if (profileError) {
+        setError(profileError.message)
+        setLoading(false)
+        return
+      }
+
+      router.replace(profile?.role === 'super_admin' ? '/admin' : '/dashboard')
     }
   }
 
   return (
-    <Card className="border-zinc-200 bg-white shadow-xl shadow-zinc-200/50">
-      <CardHeader className="space-y-3 text-center pb-2">
-        <div className="mx-auto w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-white">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
+    <Card className="overflow-hidden border-white/70 bg-white/90 shadow-xl shadow-slate-900/10 backdrop-blur">
+      <CardHeader className="space-y-3 pb-4 text-center">
+        <div className="mx-auto flex size-12 items-center justify-center rounded-lg bg-slate-950 text-white shadow-sm">
+          <Users className="size-6" />
         </div>
-        <CardTitle className="text-2xl font-bold text-zinc-900">Welcome Back</CardTitle>
-        <CardDescription className="text-zinc-500">
-          Sign in to manage your influencer campaigns
-        </CardDescription>
+        <div>
+          <CardTitle className="text-2xl font-semibold tracking-tight text-slate-950">Welcome back</CardTitle>
+          <CardDescription className="mt-2 text-slate-500">
+            Sign in to manage campaign shortlists and creator approvals.
+          </CardDescription>
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleLogin} className="space-y-4">
           {error && (
-            <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {error}
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-zinc-700">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@company.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-400 focus:border-violet-500/50 focus:ring-violet-500/20"
-            />
+            <Label htmlFor="email" className="text-slate-700">Email</Label>
+            <div className="relative">
+              <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="h-10 border-slate-200 bg-white pl-9 text-slate-950 placeholder:text-slate-400 focus:border-blue-500/50 focus:ring-blue-500/20"
+              />
+            </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-zinc-700">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-400 focus:border-violet-500/50 focus:ring-violet-500/20"
-            />
+            <Label htmlFor="password" className="text-slate-700">Password</Label>
+            <div className="relative">
+              <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="h-10 border-slate-200 bg-white pl-9 text-slate-950 placeholder:text-slate-400 focus:border-blue-500/50 focus:ring-blue-500/20"
+              />
+            </div>
           </div>
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white font-semibold shadow-lg shadow-violet-500/25 transition-all duration-300 cursor-pointer"
+            className="h-10 w-full cursor-pointer bg-slate-950 font-semibold text-white shadow-lg shadow-slate-900/15 hover:bg-slate-800"
           >
             {loading ? (
               <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                Signing in...
+                <Loader2 className="size-4 animate-spin" />
+                Signing in
               </span>
             ) : (
-              'Sign In'
+              'Sign in'
             )}
           </Button>
         </form>

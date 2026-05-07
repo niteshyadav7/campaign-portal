@@ -1,9 +1,20 @@
-import { createClient } from '@/lib/server'
+import { CalendarClock, Hourglass, MapPin, Phone, UserCheck, UserMinus, Users } from 'lucide-react'
 import { notFound } from 'next/navigation'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { InfluencerStatusActions } from '@/components/influencer-status-actions'
+import { createClient } from '@/lib/server'
+import { EmptyState, InitialAvatar, MetricCard, PageHeader, PageSurface, StatusPill } from '@/components/premium-ui'
+import type { Influencer, Profile } from '@/lib/types'
+
+type CampaignInfluencerView = {
+  campaign_id: string
+  influencer_id: string
+  status: keyof typeof statusConfig
+  updated_at: string
+  influencers?: Influencer | null
+  profiles?: Pick<Profile, 'full_name'> | null
+}
 
 function formatFollowers(count: number): string {
   if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`
@@ -12,9 +23,9 @@ function formatFollowers(count: number): string {
 }
 
 const statusConfig = {
-  pending: { label: 'Pending', className: 'border-amber-200 text-amber-700 bg-amber-50' },
-  shortlisted: { label: 'Shortlisted', className: 'border-emerald-200 text-emerald-700 bg-emerald-50' },
-  rejected: { label: 'Rejected', className: 'border-red-200 text-red-700 bg-red-50' },
+  pending: { label: 'Pending', tone: 'amber' as const },
+  shortlisted: { label: 'Shortlisted', tone: 'emerald' as const },
+  rejected: { label: 'Rejected', tone: 'rose' as const },
 }
 
 export default async function BrandCampaignDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -42,135 +53,131 @@ export default async function BrandCampaignDetailPage({ params }: { params: Prom
     pending: campaignInfluencers?.filter(ci => ci.status === 'pending').length || 0,
   }
 
-  const renderInfluencerCard = (ci: any) => (
-    <Card key={ci.influencer_id} className="bg-white border-zinc-200 hover:border-blue-300 transition-all duration-300 shadow-sm">
+  const renderInfluencerCard = (ci: CampaignInfluencerView) => (
+    <Card key={ci.influencer_id} className="overflow-hidden border-white/70 bg-white/90 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-900/10">
       <CardContent className="p-5">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center text-white font-bold shadow-sm">
-              {ci.influencers?.name?.[0]?.toUpperCase() || '?'}
-            </div>
-            <div>
-              <h3 className="font-semibold text-zinc-900">{ci.influencers?.name}</h3>
-              {ci.influencers?.instagram_url && (
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <InitialAvatar name={ci.influencers?.name} tone="blue" size="lg" />
+            <div className="min-w-0">
+              <h3 className="truncate font-semibold text-slate-950">{ci.influencers?.name}</h3>
+              {ci.influencers?.instagram_url ? (
                 <a
                   href={ci.influencers.instagram_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:text-blue-700 transition-colors font-medium"
+                  className="text-sm font-medium text-blue-700 hover:text-blue-900"
                 >
                   @{ci.influencers.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
                 </a>
-              )}
+              ) : null}
             </div>
           </div>
-          <Badge variant="outline" className={statusConfig[ci.status as keyof typeof statusConfig]?.className}>
-            {statusConfig[ci.status as keyof typeof statusConfig]?.label}
-          </Badge>
+          <StatusPill tone={statusConfig[ci.status as keyof typeof statusConfig]?.tone || 'slate'}>
+            {statusConfig[ci.status as keyof typeof statusConfig]?.label || ci.status}
+          </StatusPill>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 text-xs mb-4">
-          <div className="bg-zinc-50 border border-zinc-100 rounded-lg px-3 py-2.5 text-center">
-            <span className="text-zinc-500 block">Followers</span>
-            <p className="text-zinc-900 font-semibold mt-0.5">{formatFollowers(ci.influencers?.followers || 0)}</p>
+        <div className="mt-5 grid grid-cols-3 gap-2 text-sm">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+            <p className="text-xs text-slate-500">Followers</p>
+            <p className="mt-1 font-semibold text-slate-950">{formatFollowers(ci.influencers?.followers || 0)}</p>
           </div>
-          <div className="bg-zinc-50 border border-zinc-100 rounded-lg px-3 py-2.5 text-center">
-            <span className="text-zinc-500 block">Location</span>
-            <p className="text-zinc-900 font-semibold mt-0.5">{ci.influencers?.location || '—'}</p>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+            <p className="flex items-center gap-1 text-xs text-slate-500">
+              <MapPin className="size-3.5" />
+              Location
+            </p>
+            <p className="mt-1 truncate font-semibold text-slate-950">{ci.influencers?.location || '-'}</p>
           </div>
-          <div className="bg-zinc-50 border border-zinc-100 rounded-lg px-3 py-2.5 text-center">
-            <span className="text-zinc-500 block">Contact</span>
-            <p className="text-zinc-900 font-semibold mt-0.5">{ci.influencers?.contact_number || '—'}</p>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+            <p className="flex items-center gap-1 text-xs text-slate-500">
+              <Phone className="size-3.5" />
+              Contact
+            </p>
+            <p className="mt-1 truncate font-semibold text-slate-950">{ci.influencers?.contact_number || '-'}</p>
           </div>
         </div>
 
-        {/* Audit trail */}
-        {ci.profiles?.full_name && (
-          <p className="text-xs text-zinc-500 mb-3">
-            Updated by <span className="font-medium text-zinc-700">{ci.profiles.full_name}</span>
-            {' '}on {new Date(ci.updated_at).toLocaleDateString()}
+        {ci.profiles?.full_name ? (
+          <p className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+            <CalendarClock className="size-3.5" />
+            Updated by <span className="font-semibold text-slate-700">{ci.profiles.full_name}</span>
+            on {new Date(ci.updated_at).toLocaleDateString()}
           </p>
-        )}
+        ) : null}
 
-        <InfluencerStatusActions
-          campaignId={ci.campaign_id}
-          influencerId={ci.influencer_id}
-          currentStatus={ci.status}
-        />
+        <div className="mt-4">
+          <InfluencerStatusActions
+            campaignId={ci.campaign_id}
+            influencerId={ci.influencer_id}
+            currentStatus={ci.status}
+          />
+        </div>
       </CardContent>
     </Card>
   )
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-3xl font-bold text-zinc-900">{campaign.name}</h1>
-          <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700">
-            {campaign.status}
-          </Badge>
-        </div>
-        <p className="text-zinc-500">Review and shortlist the proposed influencers below</p>
+    <PageSurface>
+      <PageHeader
+        eyebrow="Creator review"
+        title={campaign.name}
+        description="Compare the proposed creators and choose who should move forward."
+      />
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <MetricCard title="Total" value={stats.total} detail="Presented creators" icon={Users} tone="slate" />
+        <MetricCard title="Pending" value={stats.pending} detail="Needs review" icon={Hourglass} tone="amber" />
+        <MetricCard title="Shortlisted" value={stats.shortlisted} detail="Selected" icon={UserCheck} tone="emerald" />
+        <MetricCard title="Rejected" value={stats.rejected} detail="Passed" icon={UserMinus} tone="rose" />
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
-        {[
-          { label: 'Total', value: stats.total, color: 'text-zinc-900', bg: 'bg-zinc-50' },
-          { label: 'Pending', value: stats.pending, color: 'text-amber-600', bg: 'bg-amber-50' },
-          { label: 'Shortlisted', value: stats.shortlisted, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-          { label: 'Rejected', value: stats.rejected, color: 'text-red-600', bg: 'bg-red-50' },
-        ].map((s) => (
-          <Card key={s.label} className="bg-white border-zinc-200 shadow-sm">
-            <CardContent className="p-4 text-center">
-              <div className={`mx-auto w-16 h-16 flex items-center justify-center rounded-2xl ${s.bg} mb-3`}>
-                 <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
-              </div>
-              <p className="text-sm text-zinc-600 font-medium">{s.label}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {campaignInfluencers && campaignInfluencers.length > 0 ? (
+        <Tabs defaultValue="all" className="space-y-5">
+          <TabsList className="border border-white/70 bg-white/80 p-1 shadow-sm">
+            <TabsTrigger value="all" className="cursor-pointer rounded-md data-[state=active]:bg-slate-950 data-[state=active]:text-white">
+              All ({stats.total})
+            </TabsTrigger>
+            <TabsTrigger value="pending" className="cursor-pointer rounded-md data-[state=active]:bg-amber-500 data-[state=active]:text-white">
+              Pending ({stats.pending})
+            </TabsTrigger>
+            <TabsTrigger value="shortlisted" className="cursor-pointer rounded-md data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+              Shortlisted ({stats.shortlisted})
+            </TabsTrigger>
+            <TabsTrigger value="rejected" className="cursor-pointer rounded-md data-[state=active]:bg-rose-600 data-[state=active]:text-white">
+              Rejected ({stats.rejected})
+            </TabsTrigger>
+          </TabsList>
 
-      {/* Tabs */}
-      <Tabs defaultValue="all" className="space-y-6">
-        <TabsList className="bg-zinc-100 border border-zinc-200 p-1">
-          <TabsTrigger value="all" className="data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm text-zinc-500 cursor-pointer rounded-md">
-            All ({stats.total})
-          </TabsTrigger>
-          <TabsTrigger value="pending" className="data-[state=active]:bg-white data-[state=active]:text-amber-600 data-[state=active]:shadow-sm text-zinc-500 cursor-pointer rounded-md">
-            Pending ({stats.pending})
-          </TabsTrigger>
-          <TabsTrigger value="shortlisted" className="data-[state=active]:bg-white data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm text-zinc-500 cursor-pointer rounded-md">
-            Shortlisted ({stats.shortlisted})
-          </TabsTrigger>
-          <TabsTrigger value="rejected" className="data-[state=active]:bg-white data-[state=active]:text-red-600 data-[state=active]:shadow-sm text-zinc-500 cursor-pointer rounded-md">
-            Rejected ({stats.rejected})
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="all">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {campaignInfluencers?.map(renderInfluencerCard)}
-          </div>
-        </TabsContent>
-        <TabsContent value="pending">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {campaignInfluencers?.filter(ci => ci.status === 'pending').map(renderInfluencerCard)}
-          </div>
-        </TabsContent>
-        <TabsContent value="shortlisted">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {campaignInfluencers?.filter(ci => ci.status === 'shortlisted').map(renderInfluencerCard)}
-          </div>
-        </TabsContent>
-        <TabsContent value="rejected">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {campaignInfluencers?.filter(ci => ci.status === 'rejected').map(renderInfluencerCard)}
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+          {[
+            { value: 'all', items: campaignInfluencers },
+            { value: 'pending', items: campaignInfluencers.filter(ci => ci.status === 'pending') },
+            { value: 'shortlisted', items: campaignInfluencers.filter(ci => ci.status === 'shortlisted') },
+            { value: 'rejected', items: campaignInfluencers.filter(ci => ci.status === 'rejected') },
+          ].map((tab) => (
+            <TabsContent key={tab.value} value={tab.value}>
+              {tab.items.length > 0 ? (
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  {tab.items.map(renderInfluencerCard)}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={Users}
+                  title="Nothing here yet"
+                  description="Creator decisions will appear in this view as they are updated."
+                />
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
+      ) : (
+        <EmptyState
+          icon={Users}
+          title="No influencers proposed"
+          description="Your agency has not added creators to this campaign yet."
+        />
+      )}
+    </PageSurface>
   )
 }

@@ -1,9 +1,9 @@
-import { createClient } from '@/lib/server'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { CalendarDays, Building2, Users } from 'lucide-react'
+import { BulkImportBrandsDialog } from '@/components/bulk-import-brands-dialog'
 import { CreateBrandDialog } from '@/components/create-brand-dialog'
 import { CreateBrandUserDialog } from '@/components/create-brand-user-dialog'
-import Link from 'next/link'
+import { createClient } from '@/lib/server'
+import { EmptyState, PageHeader, PageSurface, PremiumActionCard } from '@/components/premium-ui'
 
 export default async function BrandsPage() {
   const supabase = await createClient()
@@ -14,48 +14,78 @@ export default async function BrandsPage() {
     .order('created_at', { ascending: false })
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-zinc-900">Brands</h1>
-          <p className="text-zinc-500 mt-1">Manage your client brands and their team members</p>
-        </div>
-        <CreateBrandDialog />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {brands?.map((brand) => (
-          <Card key={brand.id} className="bg-white border-zinc-200 hover:border-violet-300 transition-all duration-300 group shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-zinc-900 group-hover:text-violet-600 transition-colors">{brand.name}</CardTitle>
-                <Badge variant="outline" className="border-violet-200 bg-violet-50 text-violet-700 text-xs">Active</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-xs text-zinc-500">
-                Created {new Date(brand.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-              </p>
-              <div className="flex items-center gap-2">
-                <CreateBrandUserDialog brandId={brand.id} brandName={brand.name} />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-
-        {(!brands || brands.length === 0) && (
-          <div className="col-span-full text-center py-16">
-            <div className="w-16 h-16 rounded-2xl bg-white border border-zinc-100 flex items-center justify-center mx-auto mb-4 shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-zinc-300">
-                <path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z" />
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-              </svg>
-            </div>
-            <p className="text-zinc-600 font-medium">No brands yet</p>
-            <p className="text-zinc-400 text-sm mt-1">Create your first brand to get started</p>
+    <PageSurface>
+      <PageHeader
+        eyebrow="Client directory"
+        title="Brands"
+        description="Manage client workspaces and invite the people who approve influencer shortlists."
+        action={
+          <div className="flex flex-wrap gap-2">
+            <BulkImportBrandsDialog />
+            <CreateBrandDialog />
           </div>
-        )}
-      </div>
-    </div>
+        }
+      />
+
+      {brands && brands.length > 0 ? (
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {brands.map((brand) => {
+            const dynamicFields = Object.entries((brand.extra_fields || {}) as Record<string, string>).slice(0, 4)
+
+            return (
+              <PremiumActionCard
+                key={brand.id}
+                icon={Building2}
+                eyebrow="Brand workspace"
+                title={brand.name}
+                description="Client portal with campaign access and user permissions."
+                status="Active"
+                statusTone="emerald"
+                tone="violet"
+                meta={
+                  <>
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="size-4" />
+                      Created {new Date(brand.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </div>
+                    {dynamicFields.length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {dynamicFields.map(([key, value]) => (
+                          <span key={key} className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-black text-violet-700">
+                            {key}: {value}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
+                  </>
+                }
+                footer={
+                  <>
+                    <div className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500">
+                      <Users className="size-4" />
+                      Team access
+                    </div>
+                    <CreateBrandUserDialog brandId={brand.id} brandName={brand.name} />
+                  </>
+                }
+              />
+            )
+          })}
+        </div>
+      ) : (
+        <EmptyState
+          icon={Building2}
+          title="No brands yet"
+          description="Create your first client workspace, then invite brand users to review campaigns."
+          action={
+            <div className="flex flex-wrap justify-center gap-2">
+              <BulkImportBrandsDialog />
+              <CreateBrandDialog />
+            </div>
+          }
+        />
+      )}
+
+    </PageSurface>
   )
 }

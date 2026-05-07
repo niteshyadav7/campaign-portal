@@ -1,9 +1,28 @@
-import { createClient } from '@/lib/server'
+import { CalendarClock, MapPin, Users, UserCheck, UserMinus, Hourglass } from 'lucide-react'
 import { notFound } from 'next/navigation'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { AddInfluencerToCampaign } from '@/components/add-influencer-to-campaign'
 import { InfluencerStatusActions } from '@/components/influencer-status-actions'
+import { createClient } from '@/lib/server'
+import { EmptyState, InitialAvatar, MetricCard, PageHeader, PageSurface, StatusPill } from '@/components/premium-ui'
+import type { Influencer, Profile } from '@/lib/types'
+
+type CampaignWithBrand = {
+  name: string
+  status: string
+  brands?: {
+    name: string | null
+  } | null
+}
+
+type CampaignInfluencerView = {
+  campaign_id: string
+  influencer_id: string
+  status: keyof typeof statusConfig
+  updated_at: string
+  influencers?: Influencer | null
+  profiles?: Pick<Profile, 'full_name'> | null
+}
 
 function formatFollowers(count: number): string {
   if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`
@@ -12,9 +31,9 @@ function formatFollowers(count: number): string {
 }
 
 const statusConfig = {
-  pending: { label: 'Pending', className: 'border-amber-200 text-amber-700 bg-amber-50' },
-  shortlisted: { label: 'Shortlisted', className: 'border-emerald-200 text-emerald-700 bg-emerald-50' },
-  rejected: { label: 'Rejected', className: 'border-red-200 text-red-700 bg-red-50' },
+  pending: { label: 'Pending', tone: 'amber' as const },
+  shortlisted: { label: 'Shortlisted', tone: 'emerald' as const },
+  rejected: { label: 'Rejected', tone: 'rose' as const },
 }
 
 export default async function CampaignDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -43,102 +62,89 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-3xl font-bold text-zinc-900">{campaign.name}</h1>
-            <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700">
-              {campaign.status}
-            </Badge>
-          </div>
-          <p className="text-zinc-600 font-medium">Brand: {(campaign as any).brands?.name}</p>
+    <PageSurface>
+      <PageHeader
+        eyebrow={(campaign as CampaignWithBrand).brands?.name || 'Campaign'}
+        title={campaign.name}
+        description="Curate the proposed creator list and monitor brand approval decisions."
+        action={<AddInfluencerToCampaign campaignId={id} />}
+      />
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <MetricCard title="Total" value={stats.total} detail="Assigned creators" icon={Users} tone="slate" />
+        <MetricCard title="Pending" value={stats.pending} detail="Awaiting decision" icon={Hourglass} tone="amber" />
+        <MetricCard title="Shortlisted" value={stats.shortlisted} detail="Approved by brand" icon={UserCheck} tone="emerald" />
+        <MetricCard title="Rejected" value={stats.rejected} detail="Not selected" icon={UserMinus} tone="rose" />
+      </div>
+
+      {campaignInfluencers && campaignInfluencers.length > 0 ? (
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {(campaignInfluencers as CampaignInfluencerView[]).map((ci) => (
+            <Card key={ci.influencer_id} className="overflow-hidden border-white/70 bg-white/90 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-900/10">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <InitialAvatar name={ci.influencers?.name} tone="violet" size="lg" />
+                    <div className="min-w-0">
+                      <h3 className="truncate font-semibold text-slate-950">{ci.influencers?.name}</h3>
+                      {ci.influencers?.instagram_url ? (
+                        <a
+                          href={ci.influencers.instagram_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-medium text-violet-700 hover:text-violet-900"
+                        >
+                          @{ci.influencers.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
+                        </a>
+                      ) : null}
+                    </div>
+                  </div>
+                  <StatusPill tone={statusConfig[ci.status as keyof typeof statusConfig]?.tone || 'slate'}>
+                    {statusConfig[ci.status as keyof typeof statusConfig]?.label || ci.status}
+                  </StatusPill>
+                </div>
+
+                <div className="mt-5 grid grid-cols-2 gap-2 text-sm">
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+                    <p className="text-xs text-slate-500">Followers</p>
+                    <p className="mt-1 font-semibold text-slate-950">{formatFollowers(ci.influencers?.followers || 0)}</p>
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+                    <p className="flex items-center gap-1 text-xs text-slate-500">
+                      <MapPin className="size-3.5" />
+                      Location
+                    </p>
+                    <p className="mt-1 font-semibold text-slate-950">{ci.influencers?.location || '-'}</p>
+                  </div>
+                </div>
+
+                {ci.profiles?.full_name ? (
+                  <p className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+                    <CalendarClock className="size-3.5" />
+                    Updated by <span className="font-semibold text-slate-700">{ci.profiles.full_name}</span>
+                    on {new Date(ci.updated_at).toLocaleDateString()}
+                  </p>
+                ) : null}
+
+                <div className="mt-4">
+                  <InfluencerStatusActions
+                    campaignId={ci.campaign_id}
+                    influencerId={ci.influencer_id}
+                    currentStatus={ci.status}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-        <AddInfluencerToCampaign campaignId={id} />
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
-        {[
-          { label: 'Total', value: stats.total, color: 'text-zinc-900' },
-          { label: 'Pending', value: stats.pending, color: 'text-amber-600' },
-          { label: 'Shortlisted', value: stats.shortlisted, color: 'text-emerald-600' },
-          { label: 'Rejected', value: stats.rejected, color: 'text-red-600' },
-        ].map((s) => (
-          <Card key={s.label} className="bg-white border-zinc-200 shadow-sm">
-            <CardContent className="p-4 text-center">
-              <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-              <p className="text-xs text-zinc-500 mt-1 font-medium">{s.label}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Influencer Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {campaignInfluencers?.map((ci: any) => (
-          <Card key={ci.influencer_id} className="bg-white border-zinc-200 hover:border-violet-300 transition-all duration-300 shadow-sm">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-600 to-pink-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                    {ci.influencers?.name?.[0]?.toUpperCase() || '?'}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-zinc-900 text-sm">{ci.influencers?.name}</h3>
-                    {ci.influencers?.instagram_url && (
-                      <a
-                        href={ci.influencers.instagram_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-violet-600 hover:text-violet-700 font-medium"
-                      >
-                        @{ci.influencers.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
-                      </a>
-                    )}
-                  </div>
-                </div>
-                <Badge variant="outline" className={statusConfig[ci.status as keyof typeof statusConfig]?.className}>
-                  {statusConfig[ci.status as keyof typeof statusConfig]?.label}
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs mb-4">
-                <div className="bg-zinc-50 rounded-lg px-3 py-2 border border-zinc-100">
-                  <span className="text-zinc-500">Followers</span>
-                  <p className="text-zinc-900 font-medium mt-0.5">{formatFollowers(ci.influencers?.followers || 0)}</p>
-                </div>
-                <div className="bg-zinc-50 rounded-lg px-3 py-2 border border-zinc-100">
-                  <span className="text-zinc-500">Location</span>
-                  <p className="text-zinc-900 font-medium mt-0.5">{ci.influencers?.location || '—'}</p>
-                </div>
-              </div>
-
-              {/* Audit Trail */}
-              {ci.profiles?.full_name && (
-                <p className="text-xs text-zinc-500 mb-3">
-                  Updated by <span className="font-medium text-zinc-700">{ci.profiles.full_name}</span>
-                  {' '}{new Date(ci.updated_at).toLocaleDateString()}
-                </p>
-              )}
-
-              <InfluencerStatusActions
-                campaignId={ci.campaign_id}
-                influencerId={ci.influencer_id}
-                currentStatus={ci.status}
-              />
-            </CardContent>
-          </Card>
-        ))}
-
-        {(!campaignInfluencers || campaignInfluencers.length === 0) && (
-          <div className="col-span-full text-center py-16">
-            <p className="text-zinc-600 font-medium">No influencers assigned</p>
-            <p className="text-zinc-400 text-sm mt-1">Click &quot;Add Influencer&quot; to assign influencers to this campaign</p>
-          </div>
-        )}
-      </div>
-    </div>
+      ) : (
+        <EmptyState
+          icon={Users}
+          title="No influencers assigned"
+          description="Add creators from your master pool to prepare this campaign for client review."
+          action={<AddInfluencerToCampaign campaignId={id} />}
+        />
+      )}
+    </PageSurface>
   )
 }

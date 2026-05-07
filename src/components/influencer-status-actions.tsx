@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Check, Loader2, RotateCcw, X } from 'lucide-react'
 import { updateInfluencerStatus } from '@/lib/actions'
 import { Button } from '@/components/ui/button'
 
@@ -36,9 +37,10 @@ export function InfluencerStatusActions({
           size="sm"
           disabled={loading !== null}
           onClick={() => handleAction('shortlisted')}
-          className="flex-1 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/20 cursor-pointer"
+          className="flex-1 cursor-pointer border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
         >
-          {loading === 'shortlisted' ? '...' : '✓ Shortlist'}
+          {loading === 'shortlisted' ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
+          Shortlist
         </Button>
       )}
       {currentStatus !== 'rejected' && (
@@ -46,9 +48,10 @@ export function InfluencerStatusActions({
           size="sm"
           disabled={loading !== null}
           onClick={() => handleAction('rejected')}
-          className="flex-1 bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/20 cursor-pointer"
+          className="flex-1 cursor-pointer border border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
         >
-          {loading === 'rejected' ? '...' : '✗ Reject'}
+          {loading === 'rejected' ? <Loader2 className="size-4 animate-spin" /> : <X className="size-4" />}
+          Reject
         </Button>
       )}
       {currentStatus !== 'pending' && (
@@ -57,9 +60,10 @@ export function InfluencerStatusActions({
           variant="outline"
           disabled={loading !== null}
           onClick={() => handleAction('pending')}
-          className="flex-1 border-white/10 text-zinc-400 hover:text-white cursor-pointer"
+          className="flex-1 cursor-pointer border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-950"
         >
-          {loading === 'pending' ? '...' : 'Reset'}
+          {loading === 'pending' ? <Loader2 className="size-4 animate-spin" /> : <RotateCcw className="size-4" />}
+          Reset
         </Button>
       )}
     </div>

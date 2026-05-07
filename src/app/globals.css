@@ -7,8 +7,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-app-sans);
+  --font-mono: var(--font-app-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -49,38 +49,41 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --font-app-sans: "Inter", "Aptos", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
+  --font-app-display: "Inter Tight", "Aptos Display", "Segoe UI Variable Display", "Segoe UI", Arial, sans-serif;
+  --font-app-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  --background: oklch(0.985 0.011 248.2);
+  --foreground: oklch(0.18 0.035 246.6);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.18 0.035 246.6);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --popover-foreground: oklch(0.18 0.035 246.6);
+  --primary: oklch(0.54 0.19 255.8);
+  --primary-foreground: oklch(0.99 0.004 247.8);
+  --secondary: oklch(0.955 0.028 196.5);
+  --secondary-foreground: oklch(0.24 0.055 234.1);
+  --muted: oklch(0.947 0.014 247.9);
+  --muted-foreground: oklch(0.48 0.031 248.2);
+  --accent: oklch(0.946 0.034 78.9);
+  --accent-foreground: oklch(0.29 0.064 61.8);
+  --destructive: oklch(0.62 0.22 25.6);
+  --border: oklch(0.9 0.018 247.9);
+  --input: oklch(0.9 0.018 247.9);
+  --ring: oklch(0.63 0.17 254.7);
+  --chart-1: oklch(0.62 0.19 255.8);
+  --chart-2: oklch(0.72 0.17 158.4);
+  --chart-3: oklch(0.71 0.18 74.2);
+  --chart-4: oklch(0.65 0.2 22.4);
+  --chart-5: oklch(0.57 0.18 306.8);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.19 0.039 251.7);
+  --sidebar-foreground: oklch(0.96 0.013 248.2);
+  --sidebar-primary: oklch(0.72 0.17 158.4);
+  --sidebar-primary-foreground: oklch(0.13 0.023 248.2);
+  --sidebar-accent: oklch(0.25 0.048 250.2);
+  --sidebar-accent-foreground: oklch(0.98 0.007 248.2);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.72 0.17 158.4);
 }
 
 .dark {
@@ -123,8 +126,66 @@
   }
   body {
     @apply bg-background text-foreground;
+    min-height: 100vh;
+    background:
+      linear-gradient(180deg, oklch(0.99 0.006 248) 0%, oklch(0.968 0.012 236) 100%);
+    font-family: var(--font-app-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: geometricPrecision;
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-app-display);
+    letter-spacing: 0;
+  }
+}
+
+@layer utilities {
+  .premium-text-balance {
+    text-wrap: balance;
+  }
+
+  .premium-card {
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.9) inset,
+      0 12px 36px rgb(15 23 42 / 0.07);
+  }
+
+  .premium-grid {
+    background-image:
+      linear-gradient(rgb(15 23 42 / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(15 23 42 / 0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .workspace-shell {
+    background: linear-gradient(180deg, rgb(248 250 252 / 0.96), rgb(241 245 249 / 0.98));
+  }
+
+  .focus-ring-pro {
+    @apply focus-visible:ring-3 focus-visible:ring-blue-500/20 focus-visible:outline-none;
+  }
+
+  .premium-sheen {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .premium-sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(120deg, transparent 0%, rgb(255 255 255 / 0.16) 35%, transparent 62%);
+    transform: translateX(-120%);
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .premium-sheen:hover::after {
+    transform: translateX(120%);
   }
 }

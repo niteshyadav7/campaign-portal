@@ -1,33 +1,29 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/server'
 import { BrandSidebar } from '@/components/brand-sidebar'
+import { getCurrentUserProfile } from '@/lib/auth-context'
+import { WorkspaceTopbar } from '@/components/workspace-topbar'
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { user, profile } = await getCurrentUserProfile()
 
   if (!user) redirect('/auth/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*, brands(name)')
-    .eq('id', user.id)
-    .single()
-
   if (profile?.role === 'super_admin') redirect('/admin')
+  const brandName = profile?.brands?.name || 'Brand Portal'
 
   return (
-    <div className="flex h-screen bg-zinc-50">
+    <div className="flex h-screen bg-background">
       <BrandSidebar user={user} profile={profile} />
-      <main className="flex-1 overflow-auto">
-        <div className="p-8">
+      <div className="workspace-shell flex min-w-0 flex-1 flex-col">
+        <WorkspaceTopbar workspaceName={brandName} mode="Brand" userEmail={user.email} />
+        <main className="min-h-0 flex-1 overflow-auto">
           {children}
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   )
 }

@@ -2,59 +2,19 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { motion } from 'motion/react'
+import { BarChart3, Building2, ChevronRight, FileText, LogOut, Users } from 'lucide-react'
 import { signOut } from '@/lib/actions'
 import { cn } from '@/lib/utils'
+import { InitialAvatar } from '@/components/premium-ui'
 import type { Profile } from '@/lib/types'
 import type { User } from '@supabase/supabase-js'
 
 const navItems = [
-  {
-    title: 'Dashboard',
-    href: '/admin',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Brands',
-    href: '/admin/brands',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z" />
-        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Campaigns',
-    href: '/admin/campaigns',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-        <polyline points="14,2 14,8 20,8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-        <line x1="10" y1="9" x2="8" y2="9" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Influencers',
-    href: '/admin/influencers',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
-  },
+  { title: 'Dashboard', href: '/admin', icon: BarChart3, meta: 'Overview' },
+  { title: 'Brands', href: '/admin/brands', icon: Building2, meta: 'Clients' },
+  { title: 'Campaigns', href: '/admin/campaigns', icon: FileText, meta: 'Pipeline' },
+  { title: 'Influencers', href: '/admin/influencers', icon: Users, meta: 'Talent' },
 ]
 
 export function AdminSidebar({ user, profile }: { user: User; profile: Profile }) {
@@ -64,72 +24,108 @@ export function AdminSidebar({ user, profile }: { user: User; profile: Profile }
   const handleSignOut = async () => {
     await signOut()
     router.push('/auth/login')
-    router.refresh()
   }
 
   return (
-    <aside className="w-64 border-r border-zinc-200 bg-white flex flex-col">
-      {/* Logo */}
-      <div className="p-6 border-b border-zinc-100">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-            <span className="text-white font-bold text-sm">1to7</span>
+    <motion.aside
+      initial={{ x: -18, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      className="relative flex h-screen w-72 shrink-0 flex-col overflow-hidden border-r border-white/10 bg-[#050914] text-slate-100"
+    >
+      <div className="absolute inset-0 premium-grid opacity-25" />
+
+      <div className="relative border-b border-white/10 p-4">
+        <div className="rounded-lg border border-white/10 bg-white/[0.055] p-3 shadow-xl shadow-black/15">
+          <div className="flex items-center gap-3">
+            <div className="relative flex size-11 items-center justify-center rounded-lg bg-white text-sm font-black text-slate-950 shadow-lg">
+              1to7
+              <span className="absolute -right-1 -top-1 size-3 rounded-full bg-emerald-400 ring-2 ring-[#030817]" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-base font-black tracking-normal text-white">1to7 Media</h2>
+              <p className="text-xs font-medium text-slate-400">Admin command center</p>
+            </div>
           </div>
-          <div>
-            <h2 className="font-semibold text-zinc-900 text-sm">1to7 Media</h2>
-            <p className="text-xs text-zinc-500">Admin Portal</p>
+          <div className="mt-3 flex items-center gap-2">
+            <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-[11px] font-black text-emerald-200">
+              Live
+            </span>
+            <span className="rounded-full border border-blue-300/20 bg-blue-300/10 px-2.5 py-1 text-[11px] font-black text-blue-200">
+              Agency
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 p-4 space-y-1">
-        {navItems.map((item) => {
-          const isActive = item.href === '/admin'
-            ? pathname === '/admin'
-            : pathname.startsWith(item.href)
+      <div className="relative min-h-0 flex-1 overflow-y-auto px-4 py-4">
+        <nav className="space-y-1.5">
+          {navItems.map((item, index) => {
+            const Icon = item.icon
+            const isActive = item.href === '/admin'
+              ? pathname === '/admin'
+              : pathname.startsWith(item.href)
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
-                isActive
-                  ? 'bg-violet-50 text-violet-600 shadow-sm'
-                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
-              )}
-            >
-              {item.icon}
-              {item.title}
-            </Link>
-          )
-        })}
-      </nav>
+            return (
+              <motion.div
+                key={item.href}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.08 + index * 0.04 }}
+              >
+                <Link
+                  href={item.href}
+                  className={cn(
+                    'group relative flex items-center gap-3 rounded-lg border px-3 py-2.5 transition-all duration-300',
+                    isActive
+                      ? 'border-white/20 bg-white text-slate-950 shadow-xl shadow-black/20'
+                      : 'border-white/0 text-slate-400 hover:border-white/10 hover:bg-white/[0.07] hover:text-white'
+                  )}
+                >
+                  {isActive ? (
+                    <span className="absolute -left-4 h-8 w-1 rounded-r-full bg-emerald-300 shadow-lg shadow-emerald-300/40" />
+                  ) : null}
+                  <span className={cn(
+                    'flex size-8 items-center justify-center rounded-md transition-colors',
+                    isActive ? 'bg-slate-950 text-emerald-300' : 'bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-white'
+                  )}>
+                    <Icon className="size-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-black leading-tight">{item.title}</span>
+                    <span className={cn('block text-xs font-medium', isActive ? 'text-slate-500' : 'text-slate-500')}>
+                      {item.meta}
+                    </span>
+                  </span>
+                  <ChevronRight className={cn('size-4 transition-transform group-hover:translate-x-0.5', isActive ? 'text-slate-500' : 'text-slate-600')} />
+                </Link>
+              </motion.div>
+            )
+          })}
+        </nav>
+      </div>
 
-      {/* User */}
-      <div className="p-4 border-t border-zinc-100">
-        <div className="flex items-center gap-3 px-3 py-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-blue-600 flex items-center justify-center text-white text-xs font-bold">
-            {(profile?.full_name || user.email || '?')[0].toUpperCase()}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-zinc-900 truncate">{profile?.full_name || 'Admin'}</p>
-            <p className="text-xs text-zinc-500 truncate">{user.email}</p>
+      <div className="relative shrink-0 border-t border-white/10 bg-[#050914]/95 p-4 shadow-2xl shadow-black">
+        <div className="rounded-lg border border-white/10 bg-white/[0.07] p-3 shadow-xl shadow-black/15">
+          <div className="flex items-center gap-3">
+            <InitialAvatar name={profile?.full_name || user.email} tone="emerald" size="md" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-black text-white">{profile?.full_name || 'Agency Admin'}</p>
+              <p className="truncate text-xs font-medium text-slate-400">{user.email}</p>
+            </div>
           </div>
         </div>
         <button
           onClick={handleSignOut}
-          className="mt-2 w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-zinc-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+          className="mt-3 flex w-full cursor-pointer items-center justify-between rounded-lg border border-rose-300/30 bg-rose-500 px-3 py-2.5 text-sm font-black text-white shadow-lg shadow-rose-950/30 transition-all hover:-translate-y-0.5 hover:bg-rose-400"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16,17 21,12 16,7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-          Sign Out
+          <span className="flex items-center gap-2">
+            <LogOut className="size-4" />
+            Sign out
+          </span>
+          <ChevronRight className="size-4" />
         </button>
       </div>
-    </aside>
+    </motion.aside>
   )
 }
