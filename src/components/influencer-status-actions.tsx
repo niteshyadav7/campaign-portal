@@ -60,7 +60,7 @@ export function InfluencerStatusActions({
           variant="outline"
           disabled={loading !== null}
           onClick={() => handleAction('pending')}
-          className="flex-1 cursor-pointer border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+          className="flex-1 cursor-pointer border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-teal-700"
         >
           {loading === 'pending' ? <Loader2 className="size-4 animate-spin" /> : <RotateCcw className="size-4" />}
           Reset

@@ -51,7 +51,7 @@ export default async function BrandsPage() {
                     {dynamicFields.length > 0 ? (
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {dynamicFields.map(([key, value]) => (
-                          <span key={key} className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-black text-violet-700">
+                          <span key={key} className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700">
                             {key}: {value}
                           </span>
                         ))}
@@ -61,7 +61,7 @@ export default async function BrandsPage() {
                 }
                 footer={
                   <>
-                    <div className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500">
+                    <div className="mb-3 flex items-center gap-2 text-xs font-medium uppercase text-slate-500">
                       <Users className="size-4" />
                       Team access
                     </div>

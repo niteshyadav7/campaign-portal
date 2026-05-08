@@ -42,26 +42,26 @@ export default async function InfluencersPage() {
 
       {influencers && influencers.length > 0 ? (
         <div className="grid gap-5 xl:grid-cols-[360px_1fr]">
-          <GlassPanel className="overflow-hidden bg-slate-950 text-white">
+          <GlassPanel className="overflow-hidden bg-white/[0.84] text-slate-800">
             <div className="premium-grid p-6">
-              <div className="flex size-12 items-center justify-center rounded-lg bg-emerald-400 text-slate-950">
+              <div className="flex size-12 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-900/10">
                 <Sparkles className="size-6" />
               </div>
-              <p className="mt-8 text-xs font-black uppercase tracking-[0.24em] text-emerald-300">
+              <p className="mt-8 text-xs font-semibold uppercase text-teal-700">
                 Talent intelligence
               </p>
-              <h2 className="mt-3 text-3xl font-black leading-none tracking-normal">
+              <h2 className="mt-3 text-2xl font-semibold leading-tight tracking-normal text-slate-900">
                 Creator pool at a glance.
               </h2>
               <div className="mt-7 grid gap-3">
-                <div className="rounded-lg border border-white/10 bg-white/[0.08] p-4">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Total reach</p>
-                  <p className="mt-2 text-3xl font-black">{formatFollowers(totalFollowers)}</p>
+                <div className="rounded-lg border border-emerald-100 bg-emerald-50/55 p-4">
+                  <p className="text-xs font-semibold uppercase text-slate-500">Total reach</p>
+                  <p className="mt-2 text-3xl font-semibold text-slate-900">{formatFollowers(totalFollowers)}</p>
                 </div>
-                <div className="rounded-lg border border-white/10 bg-white/[0.08] p-4">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Top creator</p>
-                  <p className="mt-2 text-lg font-black">{topCreator?.name || 'N/A'}</p>
-                  <p className="mt-1 text-sm text-slate-400">{formatFollowers(topCreator?.followers || 0)} followers</p>
+                <div className="rounded-lg border border-sky-100 bg-sky-50/55 p-4">
+                  <p className="text-xs font-semibold uppercase text-slate-500">Top creator</p>
+                  <p className="mt-2 text-lg font-semibold text-slate-900">{topCreator?.name || 'N/A'}</p>
+                  <p className="mt-1 text-sm text-slate-500">{formatFollowers(topCreator?.followers || 0)} followers</p>
                 </div>
               </div>
             </div>
@@ -70,10 +70,10 @@ export default async function InfluencersPage() {
           <GlassPanel className="overflow-hidden">
             <div className="flex flex-col gap-3 border-b border-slate-200 bg-white/80 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-700">Master database</p>
-                <h2 className="mt-1 text-xl font-black text-slate-950">Creators ready for shortlisting</h2>
+                <p className="text-xs font-semibold uppercase text-teal-700">Master database</p>
+                <h2 className="mt-1 text-xl font-semibold text-slate-900">Creators ready for shortlisting</h2>
               </div>
-              <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-bold text-emerald-700">
+              <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700">
                 <TrendingUp className="size-4" />
                 {influencers.length} profiles
               </div>
@@ -81,12 +81,12 @@ export default async function InfluencersPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-slate-200 bg-slate-50/90 hover:bg-slate-50/90">
-                  <TableHead className="h-12 px-5 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Creator</TableHead>
-                  <TableHead className="h-12 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Instagram</TableHead>
-                  <TableHead className="h-12 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Reach</TableHead>
-                  <TableHead className="h-12 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Market</TableHead>
-                  <TableHead className="h-12 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Contact</TableHead>
-                  <TableHead className="h-12 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Custom</TableHead>
+                  <TableHead className="h-12 px-5 text-xs font-semibold uppercase text-slate-500">Creator</TableHead>
+                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Instagram</TableHead>
+                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Reach</TableHead>
+                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Market</TableHead>
+                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Contact</TableHead>
+                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Custom</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -94,12 +94,12 @@ export default async function InfluencersPage() {
                   const extraFields = Object.entries(influencer.extra_fields || {})
 
                   return (
-                  <TableRow key={influencer.id} className="border-slate-100 hover:bg-blue-50/50">
+                  <TableRow key={influencer.id} className="border-slate-100 hover:bg-emerald-50/30">
                     <TableCell className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <InitialAvatar name={influencer.name} tone="emerald" size="md" />
                         <div>
-                          <span className="font-black text-slate-950">{influencer.name}</span>
+                          <span className="font-semibold text-slate-900">{influencer.name}</span>
                           <p className="text-xs font-medium text-slate-500">Influencer profile</p>
                         </div>
                       </div>
@@ -110,7 +110,7 @@ export default async function InfluencersPage() {
                           href={influencer.instagram_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-sm font-black text-blue-700 transition-colors hover:text-blue-900"
+                          className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-700 transition-colors hover:text-sky-900"
                         >
                           @{influencer.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
                           <ExternalLink className="size-3.5" />
@@ -120,17 +120,17 @@ export default async function InfluencersPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="rounded-full border-blue-200 bg-blue-50 px-3 py-1 text-sm font-black text-blue-700">
+                      <Badge variant="outline" className="rounded-full border-sky-200 bg-sky-50 px-3 py-1 text-sm font-semibold text-sky-700">
                         {formatFollowers(influencer.followers)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm font-semibold text-slate-600">
+                    <TableCell className="text-sm font-medium text-slate-600">
                       <span className="inline-flex items-center gap-1.5">
                         <MapPin className="size-3.5 text-slate-400" />
                         {influencer.location || '-'}
                       </span>
                     </TableCell>
-                    <TableCell className="text-sm font-semibold text-slate-600">
+                    <TableCell className="text-sm font-medium text-slate-600">
                       <span className="inline-flex items-center gap-1.5">
                         <Phone className="size-3.5 text-slate-400" />
                         {influencer.contact_number || '-'}
@@ -140,12 +140,12 @@ export default async function InfluencersPage() {
                       {extraFields.length > 0 ? (
                         <div className="flex flex-wrap gap-1.5">
                           {extraFields.slice(0, 2).map(([key]) => (
-                            <span key={key} className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-bold text-slate-600">
+                            <span key={key} className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600">
                               {key}
                             </span>
                           ))}
                           {extraFields.length > 2 ? (
-                            <span className="rounded-full bg-slate-950 px-2 py-1 text-xs font-bold text-white">
+                            <span className="rounded-full bg-teal-600 px-2 py-1 text-xs font-medium text-white">
                               +{extraFields.length - 2}
                             </span>
                           ) : null}

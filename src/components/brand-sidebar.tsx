@@ -1,9 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion } from 'motion/react'
-import { ChevronRight, FileText, LogOut, Users } from 'lucide-react'
+import { ChevronRight, FileText, LogOut, Users, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { signOut } from '@/lib/actions'
 import { cn } from '@/lib/utils'
 import { InitialAvatar } from '@/components/premium-ui'
@@ -25,6 +26,7 @@ export function BrandSidebar({ user, profile }: { user: User; profile: BrandSide
   const pathname = usePathname()
   const router = useRouter()
   const brandName = profile?.brands?.name || 'Brand Portal'
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   const handleSignOut = async () => {
     await signOut()
@@ -36,37 +38,65 @@ export function BrandSidebar({ user, profile }: { user: User; profile: BrandSide
       initial={{ x: -18, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="relative flex h-screen w-72 shrink-0 flex-col overflow-hidden border-r border-white/10 bg-[#050914] text-slate-100"
+      className={cn(
+        "relative z-20 flex h-screen shrink-0 flex-col border-r border-slate-200 bg-slate-50 text-slate-700 transition-[width] duration-300 ease-in-out pt-2",
+        isCollapsed ? "w-20" : "w-72"
+      )}
     >
-      <div className="absolute inset-0 premium-grid opacity-25" />
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="absolute -right-3 top-7 z-50 flex size-6 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 shadow-sm transition-transform hover:scale-110 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+      >
+        <ChevronRight className={cn("size-3.5 transition-transform duration-300", isCollapsed ? "rotate-0" : "rotate-180")} />
+      </button>
 
-      <div className="relative border-b border-white/10 p-4">
-        <div className="rounded-lg border border-white/10 bg-white/[0.055] p-3 shadow-xl shadow-black/15">
-          <div className="flex items-center gap-3">
-            <InitialAvatar name={brandName} tone="blue" size="md" />
-            <div className="min-w-0">
-              <h2 className="truncate text-base font-black tracking-normal text-white">{brandName}</h2>
-              <p className="text-xs font-medium text-slate-400">Client review portal</p>
-            </div>
-          </div>
-          <div className="mt-3 flex items-center gap-2">
-            <span className="rounded-full border border-blue-300/20 bg-blue-300/10 px-2.5 py-1 text-[11px] font-black text-blue-200">
-              Review mode
-            </span>
-            <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-[11px] font-black text-emerald-200">
-              Live
-            </span>
+      <div className="relative flex h-[72px] shrink-0 items-center border-b border-slate-200 px-5">
+        <div className={cn("flex items-center gap-3 overflow-hidden transition-all duration-300", isCollapsed ? "w-10" : "w-full")}>
+          <InitialAvatar name={brandName} tone="slate" size="sm" />
+          <div className={cn("min-w-0 flex-1 whitespace-nowrap transition-opacity duration-300", isCollapsed ? "opacity-0" : "opacity-100")}>
+            <h2 className="truncate text-sm font-semibold tracking-normal text-slate-900">{brandName}</h2>
+            <p className="truncate text-xs font-medium text-slate-500">Client portal</p>
           </div>
         </div>
       </div>
 
-      <div className="relative min-h-0 flex-1 overflow-y-auto px-4 py-4">
-        <nav className="space-y-1.5">
+      <div className="relative min-h-0 flex-1 overflow-y-auto px-3 py-4">
+        <nav className="space-y-1">
           {navItems.map((item, index) => {
             const Icon = item.icon
             const isActive = item.href === '/dashboard'
               ? pathname === '/dashboard'
               : pathname.startsWith(item.href)
+
+            const navLink = (
+                <Link
+                  href={item.href}
+                  title={isCollapsed ? item.title : undefined}
+                  className={cn(
+                    'group relative flex items-center gap-3 rounded-md transition-all duration-200',
+                    isCollapsed ? 'mx-auto h-10 w-10 justify-center' : 'px-3 py-2',
+                    isActive
+                      ? 'bg-sky-50/80 text-sky-950'
+                      : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
+                  )}
+                >
+                  {isActive && !isCollapsed ? (
+                    <span className="absolute left-0 top-1/2 -mt-3 h-6 w-1 rounded-r-md bg-sky-500" />
+                  ) : null}
+                  <Icon className={cn(
+                    'size-5 shrink-0 transition-colors',
+                    isActive ? 'text-sky-600' : 'text-slate-400 group-hover:text-slate-600'
+                  )} />
+                  <div className={cn("min-w-0 flex-1 whitespace-nowrap overflow-hidden transition-all duration-300", isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100")}>
+                    <div className="truncate text-sm font-medium leading-tight">{item.title}</div>
+                    {item.meta && (
+                      <div className={cn("mt-0.5 truncate text-[11px] font-medium transition-colors", isActive ? "text-sky-700/70" : "text-slate-400")}>
+                        {item.meta}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+            )
 
             return (
               <motion.div
@@ -75,56 +105,35 @@ export function BrandSidebar({ user, profile }: { user: User; profile: BrandSide
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.08 + index * 0.04 }}
               >
-                <Link
-                  href={item.href}
-                  className={cn(
-                    'group relative flex items-center gap-3 rounded-lg border px-3 py-2.5 transition-all duration-300',
-                    isActive
-                      ? 'border-white/20 bg-white text-slate-950 shadow-xl shadow-black/20'
-                      : 'border-white/0 text-slate-400 hover:border-white/10 hover:bg-white/[0.07] hover:text-white'
-                  )}
-                >
-                  {isActive ? (
-                    <span className="absolute -left-4 h-8 w-1 rounded-r-full bg-blue-300 shadow-lg shadow-blue-300/40" />
-                  ) : null}
-                  <span className={cn(
-                    'flex size-8 items-center justify-center rounded-md transition-colors',
-                    isActive ? 'bg-slate-950 text-blue-300' : 'bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-white'
-                  )}>
-                    <Icon className="size-4" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-black leading-tight">{item.title}</span>
-                    <span className="block text-xs font-medium text-slate-500">{item.meta}</span>
-                  </span>
-                  <ChevronRight className={cn('size-4 transition-transform group-hover:translate-x-0.5', isActive ? 'text-slate-500' : 'text-slate-600')} />
-                </Link>
+                {navLink}
               </motion.div>
             )
           })}
         </nav>
       </div>
 
-      <div className="relative shrink-0 border-t border-white/10 bg-[#050914]/95 p-4 shadow-2xl shadow-black">
-        <div className="rounded-lg border border-white/10 bg-white/[0.07] p-3 shadow-xl shadow-black/15">
-          <div className="flex items-center gap-3">
-            <InitialAvatar name={profile?.full_name || user.email} tone="emerald" size="md" />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-black text-white">{profile?.full_name || 'Brand User'}</p>
-              <p className="truncate text-xs font-medium text-slate-400">{user.email}</p>
-            </div>
+      <div className={cn("relative shrink-0 border-t border-slate-200 transition-all duration-300", isCollapsed ? "p-3" : "p-4")}>
+        <div className={cn("flex items-center gap-3 overflow-hidden transition-all duration-300", isCollapsed ? "mx-auto w-8 justify-center" : "w-full px-2")}>
+          <InitialAvatar name={profile?.full_name || user.email} tone="slate" size="sm" />
+          <div className={cn("min-w-0 flex-1 whitespace-nowrap transition-opacity duration-300", isCollapsed ? "opacity-0" : "opacity-100")}>
+            <p className="truncate text-sm font-medium text-slate-900">{profile?.full_name || 'Brand User'}</p>
+            <p className="truncate text-xs text-slate-500">{user.email}</p>
           </div>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="mt-3 flex w-full cursor-pointer items-center justify-between rounded-lg border border-rose-300/30 bg-rose-500 px-3 py-2.5 text-sm font-black text-white shadow-lg shadow-rose-950/30 transition-all hover:-translate-y-0.5 hover:bg-rose-400"
-        >
-          <span className="flex items-center gap-2">
-            <LogOut className="size-4" />
-            Sign out
-          </span>
-          <ChevronRight className="size-4" />
-        </button>
+        
+        <div className={cn("mt-4 flex overflow-hidden", isCollapsed && "justify-center")}>
+          <button
+            onClick={handleSignOut}
+            title={isCollapsed ? "Sign out" : undefined}
+            className={cn(
+              "group flex cursor-pointer items-center transition-colors hover:bg-rose-50 hover:text-rose-700",
+              isCollapsed ? "size-10 justify-center rounded-md text-slate-600" : "w-full gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-600"
+            )}
+          >
+            <LogOut className="size-5 shrink-0 text-slate-400 transition-colors group-hover:text-rose-500" />
+            {!isCollapsed && "Sign out"}
+          </button>
+        </div>
       </div>
     </motion.aside>
   )

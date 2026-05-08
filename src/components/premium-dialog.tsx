@@ -20,35 +20,35 @@ export function PremiumDialogFrame({
   accent?: 'emerald' | 'blue' | 'violet'
 }) {
   const accentClass = {
-    emerald: 'bg-emerald-400 text-slate-950',
-    blue: 'bg-blue-500 text-white',
-    violet: 'bg-violet-500 text-white',
+    emerald: 'bg-gradient-to-br from-emerald-600 to-teal-500 text-white',
+    blue: 'bg-gradient-to-br from-sky-600 to-cyan-500 text-white',
+    violet: 'bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white',
   }[accent]
 
   return (
-    <div className="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl shadow-slate-950/20 md:grid-cols-[220px_1fr]">
-      <aside className="premium-grid relative bg-slate-950 p-5 text-white">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-300 via-blue-400 to-violet-400" />
-        <div className={cn('flex size-12 items-center justify-center rounded-lg shadow-lg', accentClass)}>
+    <div className="grid overflow-hidden rounded-lg border border-white/80 bg-white/95 shadow-xl shadow-emerald-900/10 md:grid-cols-[220px_1fr]">
+      <aside className="premium-grid relative border-r border-emerald-100 bg-emerald-50/70 p-5 text-slate-800">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-400" />
+        <div className={cn('flex size-12 items-center justify-center rounded-lg shadow-lg shadow-emerald-900/10', accentClass)}>
           <Icon className="size-6" />
         </div>
-        <p className="mt-8 text-[11px] font-black uppercase tracking-[0.22em] text-emerald-300">
+        <p className="mt-8 text-[12px] font-medium uppercase tracking-[0.05em] text-teal-700">
           {eyebrow}
         </p>
         <DialogHeader className="mt-3 gap-3">
-          <DialogTitle className="text-3xl font-black leading-none text-white">
+          <DialogTitle className="text-2xl font-semibold leading-tight text-slate-900">
             {title}
           </DialogTitle>
-          <DialogDescription className="text-sm font-medium leading-6 text-slate-300">
+          <DialogDescription className="text-sm leading-6 text-slate-600">
             {description}
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-8 rounded-lg border border-white/10 bg-white/[0.07] p-3">
-          <div className="flex items-center gap-2 text-xs font-black text-white">
-            <BadgeCheck className="size-4 text-emerald-300" />
+        <div className="mt-8 rounded-lg border border-white/80 bg-white/70 p-3 shadow-sm shadow-emerald-900/5">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-800">
+            <BadgeCheck className="size-4 text-emerald-600" />
             Premium setup
           </div>
-          <p className="mt-1 text-xs leading-5 text-slate-400">
+          <p className="mt-1 text-xs leading-5 text-slate-500">
             Changes sync after submit.
           </p>
         </div>

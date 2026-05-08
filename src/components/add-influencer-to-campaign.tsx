@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Plus, Users } from 'lucide-react'
+import { Loader2, UserPlus, Users } from 'lucide-react'
 import { addInfluencerToCampaign } from '@/lib/actions'
 import { createClient } from '@/lib/client'
 import { Button } from '@/components/ui/button'
@@ -69,8 +69,8 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button className="cursor-pointer bg-blue-600 text-white shadow-lg shadow-blue-900/15 hover:bg-blue-700" />}>
-        <Plus className="mr-2 size-4" />
+      <DialogTrigger render={<Button className="cursor-pointer bg-gradient-to-r from-emerald-600 to-teal-500 font-medium text-white shadow-lg shadow-emerald-700/[0.15] hover:from-emerald-500 hover:to-teal-400" />}>
+        <UserPlus className="mr-2 size-4" />
         Add Influencer
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-2rem)] border-0 bg-transparent p-0 shadow-none ring-0 sm:max-w-4xl">
@@ -94,7 +94,7 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
                 <div className="flex min-w-0 items-center gap-3">
                   <InitialAvatar name={influencer.name} tone="violet" size="sm" />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-950">{influencer.name}</p>
+                    <p className="truncate text-sm font-medium text-slate-900">{influencer.name}</p>
                     <p className="truncate text-xs text-slate-500">
                       {formatFollowers(influencer.followers)} followers / {influencer.location || 'N/A'}
                     </p>
@@ -105,7 +105,7 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
                   variant={isAdded ? 'secondary' : 'outline'}
                   disabled={isLoading || isAdded}
                   onClick={() => handleAdd(influencer.id)}
-                  className={isAdded ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-500' : 'cursor-pointer border-slate-200 text-slate-700 hover:bg-white hover:text-slate-950'}
+                  className={isAdded ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-500' : 'cursor-pointer border-slate-200 text-slate-700 hover:bg-white hover:text-teal-700'}
                 >
                   {isLoading ? <Loader2 className="size-4 animate-spin" /> : null}
                   {isLoading ? 'Adding' : isAdded ? 'Added' : 'Add'}

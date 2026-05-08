@@ -52,13 +52,13 @@
   --font-app-sans: "Inter", "Aptos", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
   --font-app-display: "Inter Tight", "Aptos Display", "Segoe UI Variable Display", "Segoe UI", Arial, sans-serif;
   --font-app-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
-  --background: oklch(0.985 0.011 248.2);
-  --foreground: oklch(0.18 0.035 246.6);
+  --background: oklch(0.988 0.011 148);
+  --foreground: oklch(0.24 0.035 236);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0.035 246.6);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.035 246.6);
-  --primary: oklch(0.54 0.19 255.8);
+  --primary: oklch(0.58 0.14 180);
   --primary-foreground: oklch(0.99 0.004 247.8);
   --secondary: oklch(0.955 0.028 196.5);
   --secondary-foreground: oklch(0.24 0.055 234.1);
@@ -69,21 +69,21 @@
   --destructive: oklch(0.62 0.22 25.6);
   --border: oklch(0.9 0.018 247.9);
   --input: oklch(0.9 0.018 247.9);
-  --ring: oklch(0.63 0.17 254.7);
-  --chart-1: oklch(0.62 0.19 255.8);
+  --ring: oklch(0.68 0.13 181);
+  --chart-1: oklch(0.62 0.14 190);
   --chart-2: oklch(0.72 0.17 158.4);
   --chart-3: oklch(0.71 0.18 74.2);
   --chart-4: oklch(0.65 0.2 22.4);
   --chart-5: oklch(0.57 0.18 306.8);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.19 0.039 251.7);
-  --sidebar-foreground: oklch(0.96 0.013 248.2);
-  --sidebar-primary: oklch(0.72 0.17 158.4);
-  --sidebar-primary-foreground: oklch(0.13 0.023 248.2);
-  --sidebar-accent: oklch(0.25 0.048 250.2);
-  --sidebar-accent-foreground: oklch(0.98 0.007 248.2);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.72 0.17 158.4);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.985 0.014 160);
+  --sidebar-foreground: oklch(0.29 0.04 236);
+  --sidebar-primary: oklch(0.58 0.14 180);
+  --sidebar-primary-foreground: oklch(0.99 0.004 160);
+  --sidebar-accent: oklch(0.95 0.034 168);
+  --sidebar-accent-foreground: oklch(0.34 0.07 178);
+  --sidebar-border: oklch(0.9 0.032 168);
+  --sidebar-ring: oklch(0.68 0.13 181);
 }
 
 .dark {
@@ -128,7 +128,9 @@
     @apply bg-background text-foreground;
     min-height: 100vh;
     background:
-      linear-gradient(180deg, oklch(0.99 0.006 248) 0%, oklch(0.968 0.012 236) 100%);
+      radial-gradient(circle at 10% 0%, rgb(209 250 229 / 0.48), transparent 28%),
+      radial-gradient(circle at 90% 10%, rgb(186 230 253 / 0.32), transparent 26%),
+      linear-gradient(180deg, #fbfdf9 0%, #f4fbf7 100%);
     font-family: var(--font-app-sans);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     text-rendering: geometricPrecision;
@@ -152,22 +154,22 @@
   .premium-card {
     box-shadow:
       0 1px 0 rgb(255 255 255 / 0.9) inset,
-      0 12px 36px rgb(15 23 42 / 0.07);
+      0 14px 40px rgb(15 118 110 / 0.07);
   }
 
   .premium-grid {
     background-image:
-      linear-gradient(rgb(15 23 42 / 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(15 23 42 / 0.04) 1px, transparent 1px);
+      linear-gradient(rgb(13 148 136 / 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(14 165 233 / 0.035) 1px, transparent 1px);
     background-size: 28px 28px;
   }
 
   .workspace-shell {
-    background: linear-gradient(180deg, rgb(248 250 252 / 0.96), rgb(241 245 249 / 0.98));
+    background: linear-gradient(180deg, rgb(251 253 249 / 0.98), rgb(241 250 246 / 0.98));
   }
 
   .focus-ring-pro {
-    @apply focus-visible:ring-3 focus-visible:ring-blue-500/20 focus-visible:outline-none;
+    @apply focus-visible:ring-3 focus-visible:ring-teal-500/20 focus-visible:outline-none;
   }
 
   .premium-sheen {

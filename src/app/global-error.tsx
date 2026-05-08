@@ -29,7 +29,7 @@ export default function GlobalError({
             <button
               type="button"
               onClick={() => unstable_retry()}
-              className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-white px-4 text-sm font-black text-slate-950 shadow-lg shadow-black/20 transition-colors hover:bg-slate-200"
+              className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-500 px-4 text-sm font-semibold text-white shadow-lg shadow-emerald-900/10 transition-colors hover:from-emerald-500 hover:to-teal-400"
             >
               <RotateCcw className="mr-2 size-4" />
               Try again

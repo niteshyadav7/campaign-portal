@@ -54,13 +54,13 @@ export default async function BrandCampaignDetailPage({ params }: { params: Prom
   }
 
   const renderInfluencerCard = (ci: CampaignInfluencerView) => (
-    <Card key={ci.influencer_id} className="overflow-hidden border-white/70 bg-white/90 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-900/10">
+    <Card key={ci.influencer_id} className="overflow-hidden border-white/70 bg-white/90 shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/10">
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <InitialAvatar name={ci.influencers?.name} tone="blue" size="lg" />
             <div className="min-w-0">
-              <h3 className="truncate font-semibold text-slate-950">{ci.influencers?.name}</h3>
+              <h3 className="truncate font-semibold text-slate-900">{ci.influencers?.name}</h3>
               {ci.influencers?.instagram_url ? (
                 <a
                   href={ci.influencers.instagram_url}
@@ -81,21 +81,21 @@ export default async function BrandCampaignDetailPage({ params }: { params: Prom
         <div className="mt-5 grid grid-cols-3 gap-2 text-sm">
           <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
             <p className="text-xs text-slate-500">Followers</p>
-            <p className="mt-1 font-semibold text-slate-950">{formatFollowers(ci.influencers?.followers || 0)}</p>
+            <p className="mt-1 font-semibold text-slate-900">{formatFollowers(ci.influencers?.followers || 0)}</p>
           </div>
           <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
             <p className="flex items-center gap-1 text-xs text-slate-500">
               <MapPin className="size-3.5" />
               Location
             </p>
-            <p className="mt-1 truncate font-semibold text-slate-950">{ci.influencers?.location || '-'}</p>
+            <p className="mt-1 truncate font-semibold text-slate-900">{ci.influencers?.location || '-'}</p>
           </div>
           <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
             <p className="flex items-center gap-1 text-xs text-slate-500">
               <Phone className="size-3.5" />
               Contact
             </p>
-            <p className="mt-1 truncate font-semibold text-slate-950">{ci.influencers?.contact_number || '-'}</p>
+            <p className="mt-1 truncate font-semibold text-slate-900">{ci.influencers?.contact_number || '-'}</p>
           </div>
         </div>
 
@@ -136,7 +136,7 @@ export default async function BrandCampaignDetailPage({ params }: { params: Prom
       {campaignInfluencers && campaignInfluencers.length > 0 ? (
         <Tabs defaultValue="all" className="space-y-5">
           <TabsList className="border border-white/70 bg-white/80 p-1 shadow-sm">
-            <TabsTrigger value="all" className="cursor-pointer rounded-md data-[state=active]:bg-slate-950 data-[state=active]:text-white">
+            <TabsTrigger value="all" className="cursor-pointer rounded-md data-[state=active]:bg-teal-700 data-[state=active]:text-white">
               All ({stats.total})
             </TabsTrigger>
             <TabsTrigger value="pending" className="cursor-pointer rounded-md data-[state=active]:bg-amber-500 data-[state=active]:text-white">

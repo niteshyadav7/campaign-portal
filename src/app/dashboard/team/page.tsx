@@ -46,12 +46,12 @@ export default async function TeamPage() {
       {teamMembers && teamMembers.length > 0 ? (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           {teamMembers.map((member) => (
-            <Card key={member.id} className="overflow-hidden border-white/70 bg-white/90 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-900/10">
+            <Card key={member.id} className="overflow-hidden border-white/70 bg-white/90 shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/10">
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
                   <InitialAvatar name={member.full_name} tone="blue" size="lg" />
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate font-semibold text-slate-950">{member.full_name || 'Unknown user'}</h3>
+                    <h3 className="truncate font-semibold text-slate-900">{member.full_name || 'Unknown user'}</h3>
                     <div className="mt-2">
                       <StatusPill tone={member.role === 'brand_admin' ? 'blue' : 'slate'}>
                         {roleLabels[member.role] || member.role}

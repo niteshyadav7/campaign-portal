@@ -26,7 +26,7 @@ export default function WorkflowPage() {
         'Move the review into the client portal.',
       ],
       icon: Target,
-      tone: 'bg-blue-600',
+      tone: 'bg-sky-600',
     },
     {
       phase: 'Step 3',
@@ -78,10 +78,10 @@ export default function WorkflowPage() {
                 <Card className="flex-1 border-white/70 bg-white/90 shadow-sm">
                   <CardContent className="p-6">
                     <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                      <span className="w-fit rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-600">
+                      <span className="w-fit rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-medium uppercase text-teal-700">
                         {step.phase}
                       </span>
-                      <h2 className="text-xl font-semibold text-slate-950">{step.title}</h2>
+                      <h2 className="text-xl font-semibold text-slate-900">{step.title}</h2>
                     </div>
                     <ul className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
                       {step.items.map((item) => (
@@ -99,9 +99,9 @@ export default function WorkflowPage() {
         })}
       </div>
 
-      <div className="rounded-lg border border-white/70 bg-slate-950 p-8 text-center text-white shadow-sm">
-        <h2 className="text-2xl font-semibold tracking-tight">Eliminate spreadsheet drift</h2>
-        <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+      <div className="rounded-lg border border-white/80 bg-white/[0.84] p-8 text-center text-slate-800 shadow-sm">
+        <h2 className="bg-gradient-to-r from-teal-700 to-sky-600 bg-clip-text text-2xl font-semibold tracking-normal text-transparent">Eliminate spreadsheet drift</h2>
+        <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600">
           Keep creator recommendations, approvals, rejections, and audit context in one branded portal.
         </p>
       </div>

@@ -31,8 +31,8 @@ function DialogOverlay({
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
-        "bg-slate-950/55 supports-backdrop-filter:backdrop-blur-md",
+        "fixed inset-0 isolate z-50 bg-emerald-950/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "supports-backdrop-filter:backdrop-blur-md",
         className
       )}
       {...props}
@@ -55,7 +55,7 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-          "max-h-[88vh] overflow-y-auto rounded-lg border border-white/70 bg-white/95 p-4 shadow-2xl shadow-slate-950/30 ring-1 ring-white/70 sm:max-w-lg",
+          "max-h-[88vh] overflow-y-auto rounded-lg border border-white/80 bg-white/[0.96] p-4 shadow-xl shadow-emerald-900/[0.12] ring-1 ring-white/70 sm:max-w-lg",
           className
         )}
         {...props}
@@ -67,7 +67,7 @@ function DialogContent({
             render={
               <Button
                 variant="ghost"
-                className="absolute top-3 right-3 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                className="absolute top-3 right-3 bg-white/70 text-slate-500 hover:bg-emerald-50 hover:text-teal-700"
                 size="icon-sm"
               />
             }
@@ -124,7 +124,7 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn(
-        "font-heading text-xl leading-none font-black tracking-normal",
+        "font-heading text-xl leading-tight font-semibold tracking-normal",
         className
       )}
       {...props}

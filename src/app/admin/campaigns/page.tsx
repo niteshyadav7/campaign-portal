@@ -67,7 +67,7 @@ export default async function CampaignsPage() {
                       {dynamicFields.length > 0 ? (
                         <div className="flex flex-wrap gap-1.5 pt-1">
                           {dynamicFields.map(([key, value]) => (
-                            <span key={key} className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-black text-blue-700">
+                            <span key={key} className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
                               {key}: {value}
                             </span>
                           ))}

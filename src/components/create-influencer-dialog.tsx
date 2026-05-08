@@ -36,7 +36,7 @@ export function CreateInfluencerDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button className="cursor-pointer bg-emerald-400 font-black text-slate-950 shadow-lg shadow-emerald-950/20 hover:bg-emerald-300" />}>
+      <DialogTrigger render={<Button className="cursor-pointer bg-gradient-to-r from-emerald-600 to-teal-500 font-medium text-white shadow-lg shadow-emerald-700/[0.15] hover:from-emerald-500 hover:to-teal-400" />}>
         <Plus className="mr-2 size-4" />
         Add Influencer
       </DialogTrigger>
@@ -51,59 +51,59 @@ export function CreateInfluencerDialog() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-black text-slate-800">Full Name</Label>
+              <Label htmlFor="name" className="text-sm font-medium text-slate-800">Full Name</Label>
               <Input
                 id="name"
                 name="name"
                 placeholder="Influencer Name"
                 required
-                className="h-12 rounded-lg border-slate-200 bg-slate-50 text-base font-semibold text-slate-950 placeholder:text-slate-400 focus:border-emerald-500/50"
+                className="h-12 rounded-lg border-emerald-100 bg-white/80 text-base font-medium text-slate-800 placeholder:text-slate-400 focus:border-emerald-500/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="followers" className="text-sm font-black text-slate-800">Followers</Label>
+              <Label htmlFor="followers" className="text-sm font-medium text-slate-800">Followers</Label>
               <Input
                 id="followers"
                 name="followers"
                 type="number"
                 placeholder="50000"
-                className="h-12 rounded-lg border-slate-200 bg-slate-50 text-base font-semibold text-slate-950 placeholder:text-slate-400 focus:border-emerald-500/50"
+                className="h-12 rounded-lg border-emerald-100 bg-white/80 text-base font-medium text-slate-800 placeholder:text-slate-400 focus:border-emerald-500/50"
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="instagram_url" className="text-sm font-black text-slate-800">Instagram URL</Label>
+            <Label htmlFor="instagram_url" className="text-sm font-medium text-slate-800">Instagram URL</Label>
             <Input
               id="instagram_url"
               name="instagram_url"
               placeholder="https://instagram.com/username"
-              className="h-12 rounded-lg border-slate-200 bg-slate-50 text-base font-semibold text-slate-950 placeholder:text-slate-400 focus:border-emerald-500/50"
+              className="h-12 rounded-lg border-emerald-100 bg-white/80 text-base font-medium text-slate-800 placeholder:text-slate-400 focus:border-emerald-500/50"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="location" className="text-sm font-black text-slate-800">Location</Label>
+              <Label htmlFor="location" className="text-sm font-medium text-slate-800">Location</Label>
               <Input
                 id="location"
                 name="location"
                 placeholder="Mumbai, India"
-                className="h-12 rounded-lg border-slate-200 bg-slate-50 text-base font-semibold text-slate-950 placeholder:text-slate-400 focus:border-emerald-500/50"
+                className="h-12 rounded-lg border-emerald-100 bg-white/80 text-base font-medium text-slate-800 placeholder:text-slate-400 focus:border-emerald-500/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contact_number" className="text-sm font-black text-slate-800">Contact</Label>
+              <Label htmlFor="contact_number" className="text-sm font-medium text-slate-800">Contact</Label>
               <Input
                 id="contact_number"
                 name="contact_number"
                 placeholder="+91 9876543210"
-                className="h-12 rounded-lg border-slate-200 bg-slate-50 text-base font-semibold text-slate-950 placeholder:text-slate-400 focus:border-emerald-500/50"
+                className="h-12 rounded-lg border-emerald-100 bg-white/80 text-base font-medium text-slate-800 placeholder:text-slate-400 focus:border-emerald-500/50"
               />
             </div>
           </div>
           <Button
             type="submit"
             disabled={loading}
-            className="h-12 w-full cursor-pointer bg-slate-950 text-base font-black text-white shadow-lg shadow-slate-950/15 hover:bg-slate-800"
+            className="h-12 w-full cursor-pointer bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-500 text-base font-medium text-white shadow-lg shadow-emerald-700/[0.15] hover:from-emerald-500 hover:via-teal-500 hover:to-sky-400"
           >
             {loading ? <Loader2 className="size-4 animate-spin" /> : null}
             {loading ? 'Adding' : 'Add Influencer'}

@@ -15,7 +15,7 @@ const toneStyles: Record<Tone, {
   glow: string
 }> = {
   blue: {
-    icon: 'bg-blue-600 text-white',
+    icon: 'bg-sky-600 text-white',
     soft: 'bg-blue-50 text-blue-700',
     border: 'border-blue-200',
     text: 'text-blue-700',
@@ -50,8 +50,8 @@ const toneStyles: Record<Tone, {
     glow: 'shadow-violet-900/10',
   },
   slate: {
-    icon: 'bg-slate-900 text-white',
-    soft: 'bg-slate-100 text-slate-700',
+    icon: 'bg-slate-700 text-white',
+    soft: 'bg-slate-50 text-slate-700',
     border: 'border-slate-200',
     text: 'text-slate-700',
     glow: 'shadow-slate-900/10',
@@ -78,20 +78,21 @@ export function PageHeader({
   action?: ReactNode
 }) {
   return (
-    <div className="revealable premium-card premium-grid relative overflow-hidden rounded-lg border border-slate-900/10 bg-slate-950 p-5 text-white backdrop-blur sm:p-6">
-      <div className="premium-rail absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-blue-400 via-emerald-300 to-amber-300" />
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+    <div className="revealable premium-card premium-grid relative overflow-hidden rounded-lg border border-white/80 bg-white/[0.82] p-5 text-slate-800 backdrop-blur-xl sm:p-6">
+      <div className="premium-rail absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-emerald-400 via-teal-300 to-sky-400" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_8%_20%,rgb(16_185_129/.12),transparent_28%),radial-gradient(circle_at_95%_10%,rgb(14_165_233/.1),transparent_24%)]" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/70 to-transparent" />
       <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
         <div className="max-w-3xl">
           {eyebrow ? (
-            <p className="mb-3 text-[11px] font-black uppercase tracking-[0.2em] text-emerald-300">
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.06em] text-teal-700">
               {eyebrow}
             </p>
           ) : null}
-          <h1 className="premium-text-balance text-3xl font-black leading-none tracking-normal text-white sm:text-4xl">
+          <h1 className="premium-text-balance bg-gradient-to-r from-slate-800 to-teal-700 bg-clip-text text-3xl font-semibold leading-tight tracking-normal text-transparent sm:text-4xl">
             {title}
           </h1>
-          <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-300">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
             {description}
           </p>
         </div>
@@ -118,14 +119,14 @@ export function MetricCard({
 
   return (
     <Card className={cn(
-      'revealable premium-card premium-sheen group overflow-hidden border-white/80 bg-white/92 backdrop-blur transition-all duration-300 hover:-translate-y-0.5',
+      'revealable premium-card premium-sheen group overflow-hidden border-white/[0.85] bg-white/[0.88] backdrop-blur-xl transition-colors duration-300 hover:border-emerald-200/80',
       toneStyle.glow,
     )}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-500">{title}</p>
-            <p className="mt-2 text-3xl font-black tracking-normal text-slate-950">{value}</p>
+            <p className="text-[13px] font-medium uppercase tracking-[0.05em] text-slate-500">{title}</p>
+            <p className="mt-2 bg-gradient-to-r from-slate-800 to-slate-500 bg-clip-text text-3xl font-semibold tracking-normal text-transparent">{value}</p>
           </div>
           <div className={cn('flex size-10 items-center justify-center rounded-lg shadow-sm ring-1 ring-black/5', toneStyle.icon)}>
             <Icon className="size-4" />
@@ -158,7 +159,7 @@ export function EmptyState({
       <div className="flex size-12 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 shadow-sm">
         <Icon className="size-6" />
       </div>
-      <h2 className="mt-5 text-lg font-black text-slate-950">{title}</h2>
+      <h2 className="mt-5 text-lg font-semibold text-slate-900">{title}</h2>
       <p className="mt-1 max-w-md text-sm leading-6 text-slate-500">{description}</p>
       {action ? <div className="mt-5">{action}</div> : null}
     </div>
@@ -176,7 +177,7 @@ export function StatusPill({
 
   return (
     <span className={cn(
-      'inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-bold capitalize',
+      'inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium capitalize',
       toneStyle.soft,
       toneStyle.border,
     )}>
@@ -200,7 +201,7 @@ export function InitialAvatar({
 
   return (
     <div className={cn(
-      'flex shrink-0 items-center justify-center rounded-lg font-black shadow-sm ring-1 ring-black/5',
+      'flex shrink-0 items-center justify-center rounded-lg font-semibold shadow-sm ring-1 ring-black/5',
       toneStyle.icon,
       sizeClass,
     )}>
@@ -217,7 +218,7 @@ export function GlassPanel({
   className?: string
 }) {
   return (
-    <div className={cn('revealable premium-card rounded-lg border border-white/80 bg-white/[0.88] backdrop-blur', className)}>
+    <div className={cn('revealable premium-card rounded-lg border border-white/[0.85] bg-white/[0.88] backdrop-blur-xl', className)}>
       {children}
     </div>
   )
@@ -252,7 +253,7 @@ export function PremiumActionCard({
 
   return (
     <Card className={cn(
-      'revealable premium-card premium-sheen group h-full overflow-hidden border-white/80 bg-white/[0.92] transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300/80',
+      'revealable premium-card premium-sheen group h-full overflow-hidden border-white/[0.85] bg-white/90 transition-colors duration-300 hover:border-emerald-200/80',
       className,
     )}>
       <CardContent className="flex h-full flex-col p-5">
@@ -263,24 +264,24 @@ export function PremiumActionCard({
           {status ? <StatusPill tone={statusTone}>{status}</StatusPill> : null}
         </div>
         <div className="mt-5">
-          <p className={cn('text-[11px] font-black uppercase tracking-[0.16em]', toneStyle.text)}>
+          <p className={cn('text-[12px] font-medium uppercase', toneStyle.text)}>
             {eyebrow}
           </p>
-          <h2 className="mt-2 text-xl font-black leading-tight tracking-normal text-slate-950">
+          <h2 className="mt-2 text-xl font-semibold leading-tight tracking-normal text-slate-900">
             {title}
           </h2>
           {description ? (
-            <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
+            <p className="mt-2 text-sm leading-6 text-slate-500">
               {description}
             </p>
           ) : null}
         </div>
         <div className="mt-auto space-y-4 pt-5">
-          {meta ? <div className="space-y-2 text-sm font-semibold text-slate-600">{meta}</div> : null}
+          {meta ? <div className="space-y-2 text-sm font-medium text-slate-600">{meta}</div> : null}
           {actionLabel ? (
-            <div className={cn('inline-flex items-center gap-2 text-sm font-black transition-colors', toneStyle.text)}>
+            <div className={cn('inline-flex items-center gap-2 text-sm font-medium transition-colors', toneStyle.text)}>
               {actionLabel}
-              <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <ArrowUpRight className="size-4 transition-transform " />
             </div>
           ) : null}
           {footer ? (
