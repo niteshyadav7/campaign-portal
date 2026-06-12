@@ -330,3 +330,30 @@ export async function updateInfluencerStatus(
   revalidatePath(`/admin/campaigns/${campaignId}`)
   revalidatePath(`/dashboard/campaigns/${campaignId}`)
 }
+
+export async function updateTeamMemberPassword(formData: FormData) {
+  const supabase = await createClient()
+  const userId = formData.get('user_id') as string
+  const password = formData.get('password') as string
+
+  if (!userId || !password) {
+    throw new Error('User ID and Password are required')
+  }
+
+  if (password.length < 6) {
+    throw new Error('Password must be at least 6 characters long')
+  }
+
+  const { data, error } = await supabase.rpc('admin_update_user_password', {
+    p_user_id: userId,
+    p_new_password: password,
+  })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  revalidatePath('/dashboard/team')
+  return data
+}
+

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowUpRight } from 'lucide-react'
+import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { MotionStage } from '@/components/motion-shell'
 import { cn } from '@/lib/utils'
@@ -236,6 +237,7 @@ export function PremiumActionCard({
   footer,
   tone = 'blue',
   className,
+  href,
 }: {
   icon: LucideIcon
   eyebrow: string
@@ -248,6 +250,7 @@ export function PremiumActionCard({
   footer?: ReactNode
   tone?: Tone
   className?: string
+  href?: string
 }) {
   const toneStyle = toneStyles[tone]
 
@@ -267,9 +270,17 @@ export function PremiumActionCard({
           <p className={cn('text-[12px] font-medium uppercase', toneStyle.text)}>
             {eyebrow}
           </p>
-          <h2 className="mt-2 text-xl font-semibold leading-tight tracking-normal text-slate-900">
-            {title}
-          </h2>
+          {href ? (
+            <Link href={href} className="hover:underline">
+              <h2 className="mt-2 text-xl font-semibold leading-tight tracking-normal text-slate-900">
+                {title}
+              </h2>
+            </Link>
+          ) : (
+            <h2 className="mt-2 text-xl font-semibold leading-tight tracking-normal text-slate-900">
+              {title}
+            </h2>
+          )}
           {description ? (
             <p className="mt-2 text-sm leading-6 text-slate-500">
               {description}
@@ -278,7 +289,12 @@ export function PremiumActionCard({
         </div>
         <div className="mt-auto space-y-4 pt-5">
           {meta ? <div className="space-y-2 text-sm font-medium text-slate-600">{meta}</div> : null}
-          {actionLabel ? (
+          {href && actionLabel ? (
+            <Link href={href} className={cn('inline-flex items-center gap-2 text-sm font-medium transition-colors hover:underline', toneStyle.text)}>
+              {actionLabel}
+              <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
+          ) : actionLabel ? (
             <div className={cn('inline-flex items-center gap-2 text-sm font-medium transition-colors', toneStyle.text)}>
               {actionLabel}
               <ArrowUpRight className="size-4 transition-transform " />

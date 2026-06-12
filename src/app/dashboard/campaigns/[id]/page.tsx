@@ -34,7 +34,7 @@ export default async function BrandCampaignDetailPage({ params }: { params: Prom
 
   const { data: campaign } = await supabase
     .from('campaigns')
-    .select('*')
+    .select('*, brands(name)')
     .eq('id', id)
     .single()
 
@@ -121,7 +121,7 @@ export default async function BrandCampaignDetailPage({ params }: { params: Prom
   return (
     <PageSurface>
       <PageHeader
-        eyebrow="Creator review"
+        eyebrow={(campaign as any).brands?.name || 'Creator review'}
         title={campaign.name}
         description="Compare the proposed creators and choose who should move forward."
       />

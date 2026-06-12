@@ -15,7 +15,7 @@ export default async function BrandDashboard() {
   return (
     <PageSurface>
       <PageHeader
-        eyebrow="Brand review"
+        eyebrow={(profile as any)?.brands?.name || 'Brand review'}
         title="Your campaigns"
         description="Review influencer recommendations, shortlist creators, and keep feedback synced with the agency."
       />

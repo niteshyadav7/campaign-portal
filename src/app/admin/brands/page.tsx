@@ -2,14 +2,20 @@ import { CalendarDays, Building2, Users } from 'lucide-react'
 import { BulkImportBrandsDialog } from '@/components/bulk-import-brands-dialog'
 import { CreateBrandDialog } from '@/components/create-brand-dialog'
 import { CreateBrandUserDialog } from '@/components/create-brand-user-dialog'
+import { EditUserPasswordDialog } from '@/components/edit-user-password-dialog'
 import { createClient } from '@/lib/server'
-import { EmptyState, PageHeader, PageSurface, PremiumActionCard } from '@/components/premium-ui'
+import { EmptyState, InitialAvatar, PageHeader, PageSurface, PremiumActionCard } from '@/components/premium-ui'
 
 export default async function BrandsPage() {
   const supabase = await createClient()
 
   const { data: brands } = await supabase
     .from('brands')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  const { data: profiles } = await supabase
+    .from('profiles')
     .select('*')
     .order('created_at', { ascending: false })
 
@@ -31,6 +37,7 @@ export default async function BrandsPage() {
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           {brands.map((brand) => {
             const dynamicFields = Object.entries((brand.extra_fields || {}) as Record<string, string>).slice(0, 4)
+            const brandMembers = profiles?.filter((p) => p.brand_id === brand.id) || []
 
             return (
               <PremiumActionCard
@@ -42,6 +49,8 @@ export default async function BrandsPage() {
                 status="Active"
                 statusTone="emerald"
                 tone="violet"
+                href={`/admin/brands/${brand.id}`}
+                actionLabel="View workspace & team"
                 meta={
                   <>
                     <div className="flex items-center gap-2">
@@ -60,13 +69,24 @@ export default async function BrandsPage() {
                   </>
                 }
                 footer={
-                  <>
-                    <div className="mb-3 flex items-center gap-2 text-xs font-medium uppercase text-slate-500">
-                      <Users className="size-4" />
-                      Team access
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
+                      <Users className="size-4 text-teal-600" />
+                      <span>{brandMembers.length} team member{brandMembers.length === 1 ? '' : 's'}</span>
                     </div>
-                    <CreateBrandUserDialog brandId={brand.id} brandName={brand.name} />
-                  </>
+                    <div className="flex -space-x-1.5 overflow-hidden">
+                      {brandMembers.slice(0, 3).map((member) => (
+                        <div key={member.id} className="inline-block rounded-lg ring-2 ring-white">
+                          <InitialAvatar name={member.full_name} tone="blue" size="sm" />
+                        </div>
+                      ))}
+                      {brandMembers.length > 3 && (
+                        <div className="flex size-8 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-semibold text-slate-600 ring-2 ring-white">
+                          +{brandMembers.length - 3}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 }
               />
             )
