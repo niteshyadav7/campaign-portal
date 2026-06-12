@@ -357,3 +357,78 @@ export async function updateTeamMemberPassword(formData: FormData) {
   return data
 }
 
+export async function updateBrand(formData: FormData) {
+  const supabase = await createClient()
+  const brandId = formData.get('brand_id') as string
+  const name = formData.get('name') as string
+
+  if (!brandId || !name) {
+    throw new Error('Brand ID and Name are required')
+  }
+
+  const { error } = await supabase
+    .from('brands')
+    .update({ name })
+    .eq('id', brandId)
+
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/brands')
+  revalidatePath(`/admin/brands/${brandId}`)
+}
+
+export async function deleteBrand(brandId: string) {
+  const supabase = await createClient()
+
+  if (!brandId) {
+    throw new Error('Brand ID is required')
+  }
+
+  const { error } = await supabase
+    .from('brands')
+    .delete()
+    .eq('id', brandId)
+
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/brands')
+}
+
+export async function updateCampaign(formData: FormData) {
+  const supabase = await createClient()
+  const campaignId = formData.get('campaign_id') as string
+  const name = formData.get('name') as string
+  const brandId = formData.get('brand_id') as string
+  const status = formData.get('status') as string
+
+  if (!campaignId || !name || !brandId || !status) {
+    throw new Error('Campaign ID, Name, Brand, and Status are required')
+  }
+
+  const { error } = await supabase
+    .from('campaigns')
+    .update({ name, brand_id: brandId, status })
+    .eq('id', campaignId)
+
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/campaigns')
+  revalidatePath(`/admin/campaigns/${campaignId}`)
+  revalidatePath('/dashboard')
+  revalidatePath(`/dashboard/campaigns/${campaignId}`)
+}
+
+export async function deleteCampaign(campaignId: string) {
+  const supabase = await createClient()
+
+  if (!campaignId) {
+    throw new Error('Campaign ID is required')
+  }
+
+  const { error } = await supabase
+    .from('campaigns')
+    .delete()
+    .eq('id', campaignId)
+
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/campaigns')
+  revalidatePath('/dashboard')
+}
+

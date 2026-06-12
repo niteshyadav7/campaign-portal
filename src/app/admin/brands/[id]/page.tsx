@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { CreateBrandUserDialog } from '@/components/create-brand-user-dialog'
 import { EditUserPasswordDialog } from '@/components/edit-user-password-dialog'
+import { EditBrandDialog } from '@/components/edit-brand-dialog'
+import { DeleteBrandDialog } from '@/components/delete-brand-dialog'
 import { createClient } from '@/lib/server'
 import { EmptyState, InitialAvatar, MetricCard, PageHeader, PageSurface, StatusPill } from '@/components/premium-ui'
 
@@ -55,7 +57,13 @@ export default async function BrandDetailPage({ params }: { params: Promise<{ id
         eyebrow="Brand Workspace Details"
         title={brand.name}
         description="Review workspace configurations and manage the team members who have access to this brand."
-        action={<CreateBrandUserDialog brandId={brand.id} brandName={brand.name} />}
+        action={
+          <div className="flex flex-wrap gap-2">
+            <EditBrandDialog brandId={brand.id} currentName={brand.name} />
+            <DeleteBrandDialog brandId={brand.id} brandName={brand.name} />
+            <CreateBrandUserDialog brandId={brand.id} brandName={brand.name} />
+          </div>
+        }
       />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">

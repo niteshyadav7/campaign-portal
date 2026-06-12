@@ -3,12 +3,16 @@ import { notFound } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { AddInfluencerToCampaign } from '@/components/add-influencer-to-campaign'
 import { InfluencerStatusActions } from '@/components/influencer-status-actions'
+import { EditCampaignDialog } from '@/components/edit-campaign-dialog'
+import { DeleteCampaignDialog } from '@/components/delete-campaign-dialog'
 import { createClient } from '@/lib/server'
 import { EmptyState, InitialAvatar, MetricCard, PageHeader, PageSurface, StatusPill } from '@/components/premium-ui'
 import type { Influencer, Profile } from '@/lib/types'
 
 type CampaignWithBrand = {
+  id: string
   name: string
+  brand_id: string
   status: string
   brands?: {
     name: string | null
@@ -61,13 +65,26 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
     pending: campaignInfluencers?.filter(ci => ci.status === 'pending').length || 0,
   }
 
+  const camp = campaign as CampaignWithBrand
+
   return (
     <PageSurface>
       <PageHeader
-        eyebrow={(campaign as CampaignWithBrand).brands?.name || 'Campaign'}
-        title={campaign.name}
+        eyebrow={camp.brands?.name || 'Campaign'}
+        title={camp.name}
         description="Curate the proposed creator list and monitor brand approval decisions."
-        action={<AddInfluencerToCampaign campaignId={id} />}
+        action={
+          <div className="flex flex-wrap gap-2">
+            <EditCampaignDialog
+              campaignId={camp.id}
+              currentName={camp.name}
+              currentBrandId={camp.brand_id}
+              currentStatus={camp.status}
+            />
+            <DeleteCampaignDialog campaignId={camp.id} campaignName={camp.name} />
+            <AddInfluencerToCampaign campaignId={id} />
+          </div>
+        }
       />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
