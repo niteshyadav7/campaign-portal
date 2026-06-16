@@ -82,11 +82,11 @@ export default async function InfluencersPage() {
               <TableHeader>
                 <TableRow className="border-slate-200 bg-slate-50/90 hover:bg-slate-50/90">
                   <TableHead className="h-12 px-5 text-xs font-semibold uppercase text-slate-500">Creator</TableHead>
-                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Instagram</TableHead>
+                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500 hidden sm:table-cell">Instagram</TableHead>
                   <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Reach</TableHead>
-                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Market</TableHead>
-                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Contact</TableHead>
-                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Custom</TableHead>
+                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500 hidden md:table-cell">Market</TableHead>
+                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500 hidden lg:table-cell">Contact</TableHead>
+                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500 hidden xl:table-cell">Custom</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -101,10 +101,32 @@ export default async function InfluencersPage() {
                         <div>
                           <span className="font-semibold text-slate-900">{influencer.name}</span>
                           <p className="text-xs font-medium text-slate-500">Influencer profile</p>
+                          {/* Stacked info visible only on small screens */}
+                          <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-slate-500 sm:hidden">
+                            {influencer.instagram_url && (
+                              <a
+                                href={influencer.instagram_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sky-600 hover:underline"
+                              >
+                                @{influencer.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
+                              </a>
+                            )}
+                            {influencer.location && (
+                              <>
+                                <span className="text-slate-300">•</span>
+                                <span className="flex items-center gap-0.5">
+                                  <MapPin className="size-3" />
+                                  {influencer.location}
+                                </span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       {influencer.instagram_url ? (
                         <a
                           href={influencer.instagram_url}
@@ -124,19 +146,19 @@ export default async function InfluencersPage() {
                         {formatFollowers(influencer.followers)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm font-medium text-slate-600">
+                    <TableCell className="text-sm font-medium text-slate-600 hidden md:table-cell">
                       <span className="inline-flex items-center gap-1.5">
                         <MapPin className="size-3.5 text-slate-400" />
                         {influencer.location || '-'}
                       </span>
                     </TableCell>
-                    <TableCell className="text-sm font-medium text-slate-600">
+                    <TableCell className="text-sm font-medium text-slate-600 hidden lg:table-cell">
                       <span className="inline-flex items-center gap-1.5">
                         <Phone className="size-3.5 text-slate-400" />
                         {influencer.contact_number || '-'}
                       </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden xl:table-cell">
                       {extraFields.length > 0 ? (
                         <div className="flex flex-wrap gap-1.5">
                           {extraFields.slice(0, 2).map(([key]) => (
