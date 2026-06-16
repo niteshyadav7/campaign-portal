@@ -1,10 +1,9 @@
-import { ExternalLink, MapPin, Phone, Sparkles, TrendingUp, Users } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Sparkles, TrendingUp, Users } from 'lucide-react'
 import { CreateInfluencerDialog } from '@/components/create-influencer-dialog'
 import { BulkImportInfluencersDialog } from '@/components/bulk-import-influencers-dialog'
+import { InfluencerPoolTable } from '@/components/influencer-pool-table'
 import { createClient } from '@/lib/server'
-import { EmptyState, GlassPanel, InitialAvatar, PageHeader, PageSurface } from '@/components/premium-ui'
+import { EmptyState, GlassPanel, PageHeader, PageSurface } from '@/components/premium-ui'
 
 function formatFollowers(count: number): string {
   if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`
@@ -78,109 +77,7 @@ export default async function InfluencersPage() {
                 {influencers.length} profiles
               </div>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow className="border-slate-200 bg-slate-50/90 hover:bg-slate-50/90">
-                  <TableHead className="h-12 px-5 text-xs font-semibold uppercase text-slate-500">Creator</TableHead>
-                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500 hidden sm:table-cell">Instagram</TableHead>
-                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500">Reach</TableHead>
-                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500 hidden md:table-cell">Market</TableHead>
-                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500 hidden lg:table-cell">Contact</TableHead>
-                  <TableHead className="h-12 text-xs font-semibold uppercase text-slate-500 hidden xl:table-cell">Custom</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {influencers.map((influencer) => {
-                  const extraFields = Object.entries(influencer.extra_fields || {})
-
-                  return (
-                  <TableRow key={influencer.id} className="border-slate-100 hover:bg-emerald-50/30">
-                    <TableCell className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <InitialAvatar name={influencer.name} tone="emerald" size="md" />
-                        <div>
-                          <span className="font-semibold text-slate-900">{influencer.name}</span>
-                          <p className="text-xs font-medium text-slate-500">Influencer profile</p>
-                          {/* Stacked info visible only on small screens */}
-                          <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-slate-500 sm:hidden">
-                            {influencer.instagram_url && (
-                              <a
-                                href={influencer.instagram_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sky-600 hover:underline"
-                              >
-                                @{influencer.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
-                              </a>
-                            )}
-                            {influencer.location && (
-                              <>
-                                <span className="text-slate-300">•</span>
-                                <span className="flex items-center gap-0.5">
-                                  <MapPin className="size-3" />
-                                  {influencer.location}
-                                </span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                      {influencer.instagram_url ? (
-                        <a
-                          href={influencer.instagram_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-700 transition-colors hover:text-sky-900"
-                        >
-                          @{influencer.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
-                          <ExternalLink className="size-3.5" />
-                        </a>
-                      ) : (
-                        <span className="text-slate-400">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="rounded-full border-sky-200 bg-sky-50 px-3 py-1 text-sm font-semibold text-sky-700">
-                        {formatFollowers(influencer.followers)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm font-medium text-slate-600 hidden md:table-cell">
-                      <span className="inline-flex items-center gap-1.5">
-                        <MapPin className="size-3.5 text-slate-400" />
-                        {influencer.location || '-'}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-sm font-medium text-slate-600 hidden lg:table-cell">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Phone className="size-3.5 text-slate-400" />
-                        {influencer.contact_number || '-'}
-                      </span>
-                    </TableCell>
-                    <TableCell className="hidden xl:table-cell">
-                      {extraFields.length > 0 ? (
-                        <div className="flex flex-wrap gap-1.5">
-                          {extraFields.slice(0, 2).map(([key]) => (
-                            <span key={key} className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600">
-                              {key}
-                            </span>
-                          ))}
-                          {extraFields.length > 2 ? (
-                            <span className="rounded-full bg-teal-600 px-2 py-1 text-xs font-medium text-white">
-                              +{extraFields.length - 2}
-                            </span>
-                          ) : null}
-                        </div>
-                      ) : (
-                        <span className="text-slate-400">-</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
+            <InfluencerPoolTable initialInfluencers={influencers || []} />
           </GlassPanel>
         </div>
       ) : (
