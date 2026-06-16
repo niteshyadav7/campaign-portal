@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, UserPlus, Users } from 'lucide-react'
 import { addInfluencerToCampaign, bulkAddInfluencersToCampaign } from '@/lib/actions'
@@ -26,11 +26,22 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
   const [influencers, setInfluencers] = useState<Influencer[]>([])
   const [addedInfluencerIds, setAddedInfluencerIds] = useState<Set<string>>(new Set())
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  // Filters state
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedLocation, setSelectedLocation] = useState('')
+  const [selectedNiche, setSelectedNiche] = useState('')
+  const [selectedFollowerRange, setSelectedFollowerRange] = useState('all')
+
   const router = useRouter()
 
   useEffect(() => {
     if (!open) {
       setSelectedIds(new Set())
+      setSearchQuery('')
+      setSelectedLocation('')
+      setSelectedNiche('')
+      setSelectedFollowerRange('all')
       return
     }
 
@@ -48,6 +59,62 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
       setAddedInfluencerIds(addedIds)
     })
   }, [open, campaignId])
+
+  // Get unique niches dynamically
+  const niches = useMemo(() => {
+    const set = new Set<string>()
+    influencers.forEach((inf) => {
+      if (inf.extra_fields) {
+        const nicheVal = inf.extra_fields.niche || inf.extra_fields.category || inf.extra_fields.industry
+        if (nicheVal) set.add(nicheVal.toString())
+      }
+    })
+    return Array.from(set).sort()
+  }, [influencers])
+
+  // Get unique locations dynamically
+  const locations = useMemo(() => {
+    const set = new Set<string>()
+    influencers.forEach((inf) => {
+      if (inf.location) set.add(inf.location)
+    })
+    return Array.from(set).sort()
+  }, [influencers])
+
+  // Filter influencers list
+  const filteredInfluencers = useMemo(() => {
+    return influencers.filter((inf) => {
+      // 1. Search Query (Name or Instagram Handle)
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase()
+        const nameMatch = inf.name.toLowerCase().includes(query)
+        const handleMatch = inf.instagram_url?.toLowerCase().includes(query) || false
+        if (!nameMatch && !handleMatch) return false
+      }
+
+      // 2. Location
+      if (selectedLocation && inf.location !== selectedLocation) {
+        return false
+      }
+
+      // 3. Niche
+      if (selectedNiche) {
+        const nicheVal = inf.extra_fields?.niche || inf.extra_fields?.category || inf.extra_fields?.industry
+        if (nicheVal !== selectedNiche) return false
+      }
+
+      // 4. Followers
+      if (selectedFollowerRange !== 'all') {
+        const f = inf.followers
+        if (selectedFollowerRange === 'under-10k' && f >= 10000) return false
+        if (selectedFollowerRange === '10k-50k' && (f < 10000 || f > 50000)) return false
+        if (selectedFollowerRange === '50k-100k' && (f < 50000 || f > 100000)) return false
+        if (selectedFollowerRange === 'over-100k' && f < 100000) return false
+      }
+
+      return true
+    })
+  }, [influencers, searchQuery, selectedLocation, selectedNiche, selectedFollowerRange])
 
   const handleAdd = async (influencerId: string) => {
     setLoading(influencerId)
@@ -100,7 +167,7 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
     return count.toString()
   }
 
-  const nonAddedInfluencers = influencers.filter((i) => !addedInfluencerIds.has(i.id))
+  const nonAddedInfluencers = filteredInfluencers.filter((i) => !addedInfluencerIds.has(i.id))
   const isAllSelected = nonAddedInfluencers.length > 0 && nonAddedInfluencers.every((i) => selectedIds.has(i.id))
 
   return (
@@ -117,6 +184,56 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
           description="Select creators from your pool to attach to this campaign."
           accent="blue"
         >
+          {/* Filters Dashboard */}
+          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4 rounded-lg border border-slate-200 bg-slate-50/60 p-3 shadow-inner shadow-slate-100">
+            <div>
+              <input
+                type="text"
+                placeholder="Search name or handle..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-9 w-full rounded-md border border-slate-200 bg-white px-2.5 text-xs text-slate-800 focus:border-teal-500/50 focus:outline-none focus:ring-2 focus:ring-teal-500/10 placeholder:text-slate-400"
+              />
+            </div>
+            <div>
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="h-9 w-full rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700 focus:border-teal-500/50 focus:outline-none focus:ring-2 focus:ring-teal-500/10"
+              >
+                <option value="">All Locations</option>
+                {locations.map((loc) => (
+                  <option key={loc} value={loc}>{loc}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                value={selectedNiche}
+                onChange={(e) => setSelectedNiche(e.target.value)}
+                className="h-9 w-full rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700 focus:border-teal-500/50 focus:outline-none focus:ring-2 focus:ring-teal-500/10"
+              >
+                <option value="">All Niches</option>
+                {niches.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                value={selectedFollowerRange}
+                onChange={(e) => setSelectedFollowerRange(e.target.value)}
+                className="h-9 w-full rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700 focus:border-teal-500/50 focus:outline-none focus:ring-2 focus:ring-teal-500/10"
+              >
+                <option value="all">All Followers</option>
+                <option value="under-10k">Under 10K</option>
+                <option value="10k-50k">10K - 50K</option>
+                <option value="50k-100k">50K - 100K</option>
+                <option value="over-100k">100K+</option>
+              </select>
+            </div>
+          </div>
+
           {nonAddedInfluencers.length > 0 && (
             <div className="mb-4 flex items-center justify-between border-b border-slate-150 pb-3">
               <label className="flex cursor-pointer items-center gap-2.5 text-sm font-semibold text-slate-700 hover:text-slate-900">
@@ -132,7 +249,7 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
                   }}
                   className="size-4 cursor-pointer rounded border-slate-350 bg-white text-teal-600 focus:ring-teal-500 focus:ring-offset-0"
                 />
-                Select All ({nonAddedInfluencers.length} available)
+                Select All ({nonAddedInfluencers.length} filtered)
               </label>
 
               {selectedIds.size > 0 && (
@@ -149,10 +266,13 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
             </div>
           )}
 
-          <div className="max-h-[52vh] space-y-2 overflow-y-auto pr-1">
-            {influencers.map((influencer) => {
+          <div className="max-h-[42vh] space-y-2 overflow-y-auto pr-1">
+            {filteredInfluencers.map((influencer) => {
               const isAdded = addedInfluencerIds.has(influencer.id)
               const isLoading = loading === influencer.id
+
+              // Find Niche / Category if any to show badge
+              const nicheVal = influencer.extra_fields?.niche || influencer.extra_fields?.category || influencer.extra_fields?.category
 
               return (
                 <div
@@ -181,7 +301,14 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
                     )}
                     <InitialAvatar name={influencer.name} tone="violet" size="sm" />
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-slate-900">{influencer.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="truncate text-sm font-medium text-slate-900">{influencer.name}</p>
+                        {nicheVal && (
+                          <span className="rounded bg-teal-50 border border-teal-100 px-1.5 py-0.5 text-[10px] font-semibold text-teal-700 uppercase">
+                            {nicheVal}
+                          </span>
+                        )}
+                      </div>
                       <p className="truncate text-xs text-slate-500">
                         {formatFollowers(influencer.followers)} followers / {influencer.location || 'N/A'}
                       </p>
@@ -200,8 +327,8 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
                 </div>
               )
             })}
-            {influencers.length === 0 && (
-              <p className="py-8 text-center text-sm text-slate-500">No influencers in the pool yet.</p>
+            {filteredInfluencers.length === 0 && (
+              <p className="py-8 text-center text-sm text-slate-500">No influencers match your current filters.</p>
             )}
           </div>
         </PremiumDialogFrame>
@@ -209,4 +336,5 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
     </Dialog>
   )
 }
+
 
