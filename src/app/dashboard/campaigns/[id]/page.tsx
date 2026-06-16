@@ -6,6 +6,7 @@ import { InfluencerStatusActions } from '@/components/influencer-status-actions'
 import { InfluencerCommentSection } from '@/components/influencer-comment-section'
 import { createClient } from '@/lib/server'
 import { EmptyState, InitialAvatar, MetricCard, PageHeader, PageSurface, StatusPill } from '@/components/premium-ui'
+import { ExportShortlistButton } from '@/components/export-shortlist-button'
 import type { Influencer, Profile } from '@/lib/types'
 
 type CampaignInfluencerView = {
@@ -101,6 +102,22 @@ export default async function BrandCampaignDetailPage({ params }: { params: Prom
           </div>
         </div>
 
+        {ci.influencers?.extra_fields && Object.keys(ci.influencers.extra_fields).length > 0 && (
+          <div className="mt-3.5 flex flex-wrap gap-1.5 border-t border-slate-100 pt-3">
+            {Object.entries(ci.influencers.extra_fields).map(([key, value]) => {
+              if (!value) return null
+              return (
+                <span
+                  key={key}
+                  className="rounded-full bg-slate-50 border border-slate-150 px-2.5 py-0.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider"
+                >
+                  {key}: {value}
+                </span>
+              )
+            })}
+          </div>
+        )}
+
         {ci.profiles?.full_name ? (
           <p className="mt-4 flex items-center gap-2 text-xs text-slate-500">
             <CalendarClock className="size-3.5" />
@@ -126,12 +143,25 @@ export default async function BrandCampaignDetailPage({ params }: { params: Prom
     </Card>
   )
 
+  const shortlistedCreators = (campaignInfluencers || [])
+    .filter(ci => ci.status === 'shortlisted')
+    .map(ci => ({
+      name: ci.influencers?.name || 'Unknown',
+      handle: ci.influencers?.instagram_url
+        ? `@${ci.influencers.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}`
+        : 'N/A',
+      followers: ci.influencers?.followers || 0,
+      location: ci.influencers?.location || 'N/A',
+      contact: ci.influencers?.contact_number || 'N/A',
+    }))
+
   return (
     <PageSurface>
       <PageHeader
         eyebrow={(campaign as any).brands?.name || 'Creator review'}
         title={campaign.name}
         description="Compare the proposed creators and choose who should move forward."
+        action={<ExportShortlistButton campaignName={campaign.name} creators={shortlistedCreators} />}
       />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
