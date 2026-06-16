@@ -7,6 +7,7 @@ import { InfluencerCommentSection } from '@/components/influencer-comment-sectio
 import { createClient } from '@/lib/server'
 import { EmptyState, InitialAvatar, MetricCard, PageHeader, PageSurface, StatusPill } from '@/components/premium-ui'
 import { ExportShortlistButton } from '@/components/export-shortlist-button'
+import { SocialQuickActions } from '@/components/social-quick-actions'
 import type { Influencer, Profile } from '@/lib/types'
 
 type CampaignInfluencerView = {
@@ -65,14 +66,17 @@ export default async function BrandCampaignDetailPage({ params }: { params: Prom
             <div className="min-w-0">
               <h3 className="truncate font-semibold text-slate-900">{ci.influencers?.name}</h3>
               {ci.influencers?.instagram_url ? (
-                <a
-                  href={ci.influencers.instagram_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-blue-700 hover:text-blue-900"
-                >
-                  @{ci.influencers.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
-                </a>
+                <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                  <a
+                    href={ci.influencers.instagram_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:text-blue-900"
+                  >
+                    @{ci.influencers.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
+                  </a>
+                  <SocialQuickActions instagramUrl={ci.influencers.instagram_url} />
+                </div>
               ) : null}
             </div>
           </div>

@@ -7,6 +7,7 @@ import { EditCampaignDialog } from '@/components/edit-campaign-dialog'
 import { DeleteCampaignDialog } from '@/components/delete-campaign-dialog'
 import { InfluencerCommentSection } from '@/components/influencer-comment-section'
 import { ExportShortlistButton } from '@/components/export-shortlist-button'
+import { SocialQuickActions } from '@/components/social-quick-actions'
 import { createClient } from '@/lib/server'
 import { EmptyState, InitialAvatar, MetricCard, PageHeader, PageSurface, StatusPill } from '@/components/premium-ui'
 import type { Influencer, Profile } from '@/lib/types'
@@ -124,14 +125,17 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
                     <div className="min-w-0">
                       <h3 className="truncate font-semibold text-slate-900">{ci.influencers?.name}</h3>
                       {ci.influencers?.instagram_url ? (
-                        <a
-                          href={ci.influencers.instagram_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm font-medium text-violet-700 hover:text-violet-900"
-                        >
-                          @{ci.influencers.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
-                        </a>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                          <a
+                            href={ci.influencers.instagram_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-sm font-medium text-violet-700 hover:text-violet-900"
+                          >
+                            @{ci.influencers.instagram_url.replace(/.*instagram\.com\//, '').replace(/\/$/, '')}
+                          </a>
+                          <SocialQuickActions instagramUrl={ci.influencers.instagram_url} />
+                        </div>
                       ) : null}
                     </div>
                   </div>
