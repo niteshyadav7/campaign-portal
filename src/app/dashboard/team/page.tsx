@@ -59,6 +59,9 @@ export default async function TeamPage() {
                     <InitialAvatar name={member.full_name} tone="blue" size="lg" />
                     <div className="min-w-0 flex-1">
                       <h3 className="truncate font-semibold text-slate-900">{member.full_name || 'Unknown user'}</h3>
+                      {member.email && (
+                        <p className="truncate text-xs text-slate-500 mt-0.5">{member.email}</p>
+                      )}
                       <div className="mt-2">
                         <StatusPill tone={member.role === 'brand_admin' ? 'blue' : 'slate'}>
                           {roleLabels[member.role] || member.role}
@@ -74,7 +77,7 @@ export default async function TeamPage() {
                     {canEditPassword && (
                       <EditUserPasswordDialog
                         userId={member.id}
-                        userEmail={member.full_name || ''}
+                        userEmail={member.email || ''}
                         userName={member.full_name || 'Team Member'}
                       />
                     )}

@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, FileSpreadsheet, Loader2, Upload } from 'lucide-react'
+import { Building2, Download, FileSpreadsheet, Loader2, Upload } from 'lucide-react'
 import { bulkCreateBrands } from '@/lib/actions'
 import { guessCsvMapping, parseCsv } from '@/lib/csv-import'
 import { Button } from '@/components/ui/button'
@@ -23,6 +23,26 @@ export function BulkImportBrandsDialog() {
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
+
+  const handleDownloadTemplate = () => {
+    const headers = ['Brand Name', 'Industry', 'Region']
+    const rows = [
+      ['Nike', 'Sports', 'India'],
+      ['Coca-Cola', 'FMCG', 'West']
+    ]
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
+    ].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'brands_import_template.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   const parsed = useMemo(() => {
     const rows = parseCsv(csvText)
@@ -92,13 +112,23 @@ export function BulkImportBrandsDialog() {
           <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
             <div className="space-y-5">
               <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4">
-                <Label htmlFor="brand-csv-file" className="text-sm font-semibold text-slate-800">CSV file</Label>
+                <div className="flex items-center justify-between mb-2">
+                  <Label htmlFor="brand-csv-file" className="text-sm font-semibold text-slate-800">CSV file</Label>
+                  <button
+                    type="button"
+                    onClick={handleDownloadTemplate}
+                    className="text-xs font-semibold text-teal-600 hover:text-teal-700 hover:underline cursor-pointer flex items-center gap-1 bg-transparent border-0 p-0"
+                  >
+                    <Download className="size-3.5" />
+                    Download CSV Template
+                  </button>
+                </div>
                 <input
                   id="brand-csv-file"
                   type="file"
                   accept=".csv,text/csv"
                   onChange={(event) => handleFile(event.target.files?.[0])}
-                  className="mt-2 block w-full cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-teal-600 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white"
+                  className="block w-full cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-teal-600 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white"
                 />
               </div>
               <div className="space-y-2">

@@ -31,9 +31,13 @@ export function CreateBrandUserDialog({ brandId, brandName }: { brandId: string;
     const formData = new FormData(e.currentTarget)
     formData.set('brand_id', brandId)
     try {
-      await createBrandUser(formData)
-      setOpen(false)
-      router.refresh()
+      const res = await createBrandUser(formData)
+      if (res && !res.success) {
+        setError(res.error || 'Failed to create user')
+      } else {
+        setOpen(false)
+        router.refresh()
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create user')
     } finally {
@@ -90,6 +94,7 @@ export function CreateBrandUserDialog({ brandId, brandName }: { brandId: string;
               type="text"
               placeholder="Generate a strong password"
               required
+              minLength={6}
               className="h-12 rounded-lg border-emerald-100 bg-white/80 text-base font-medium text-slate-800 placeholder:text-slate-400 focus:border-emerald-500/50"
             />
           </div>

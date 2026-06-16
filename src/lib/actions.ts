@@ -74,48 +74,68 @@ export async function bulkCreateBrands(formData: FormData) {
   return { inserted: brands.length }
 }
 
-export async function createBrandUser(formData: FormData) {
-  const authClient = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
+export async function createBrandUser(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const authClient = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    )
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+    const fullName = formData.get('full_name') as string
+    const brandId = formData.get('brand_id') as string
+    const role = formData.get('role') as string
+
+    if (!email || !password || !fullName || !brandId || !role) {
+      return { success: false, error: 'All fields are required.' }
     }
-  )
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const fullName = formData.get('full_name') as string
-  const brandId = formData.get('brand_id') as string
-  const role = formData.get('role') as string
 
-  // Use an isolated auth client so creating a brand user does not replace
-  // the current admin's cookie-backed session.
-  const { data: authData, error: authError } = await authClient.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: fullName }
+    if (password.length < 6) {
+      return { success: false, error: 'Password must be at least 6 characters long.' }
     }
-  })
 
-  if (authError) throw new Error(authError.message)
+    // Use an isolated auth client so creating a brand user does not replace
+    // the current admin's cookie-backed session.
+    const { data: authData, error: authError } = await authClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: fullName }
+      }
+    })
 
-  if (authData.user) {
-    // Update their profile with brand_id and role
-    const { error: profileError } = await authClient
-      .from('profiles')
-      .update({ brand_id: brandId, role, full_name: fullName })
-      .eq('id', authData.user.id)
+    if (authError) {
+      return { success: false, error: authError.message }
+    }
 
-    if (profileError) throw new Error(profileError.message)
+    if (authData.user) {
+      // Update their profile with brand_id and role
+      const { error: profileError } = await authClient
+        .from('profiles')
+        .update({ brand_id: brandId, role, full_name: fullName })
+        .eq('id', authData.user.id)
+
+      if (profileError) {
+        return { success: false, error: profileError.message }
+      }
+    }
+
+    await authClient.auth.signOut()
+
+    revalidatePath('/admin/brands')
+    return { success: true }
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'An unexpected error occurred.',
+    }
   }
-
-  await authClient.auth.signOut()
-
-  revalidatePath('/admin/brands')
 }
 
 export async function createCampaign(formData: FormData) {
@@ -299,6 +319,32 @@ export async function addInfluencerToCampaign(campaignId: string, influencerId: 
   revalidatePath(`/admin/campaigns/${campaignId}`)
 }
 
+export async function bulkAddInfluencersToCampaign(campaignId: string, influencerIds: string[]): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient()
+
+    const records = influencerIds.map((id) => ({
+      campaign_id: campaignId,
+      influencer_id: id,
+      status: 'pending',
+    }))
+
+    const { error } = await supabase
+      .from('campaign_influencers')
+      .insert(records)
+
+    if (error) throw new Error(error.message)
+
+    revalidatePath(`/admin/campaigns/${campaignId}`)
+    return { success: true }
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to add influencers in bulk',
+    }
+  }
+}
+
 export async function removeInfluencerFromCampaign(campaignId: string, influencerId: string) {
   const supabase = await createClient()
 
@@ -430,5 +476,32 @@ export async function deleteCampaign(campaignId: string) {
   if (error) throw new Error(error.message)
   revalidatePath('/admin/campaigns')
   revalidatePath('/dashboard')
+}
+
+export async function updateInfluencerComment(
+  campaignId: string,
+  influencerId: string,
+  comment: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient()
+
+    const { error } = await supabase
+      .from('campaign_influencers')
+      .update({ comment: comment.trim() || null })
+      .eq('campaign_id', campaignId)
+      .eq('influencer_id', influencerId)
+
+    if (error) throw new Error(error.message)
+
+    revalidatePath(`/admin/campaigns/${campaignId}`)
+    revalidatePath(`/dashboard/campaigns/${campaignId}`)
+    return { success: true }
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to update comment',
+    }
+  }
 }
 

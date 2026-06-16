@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, UserPlus, Users } from 'lucide-react'
-import { addInfluencerToCampaign } from '@/lib/actions'
+import { addInfluencerToCampaign, bulkAddInfluencersToCampaign } from '@/lib/actions'
 import { createClient } from '@/lib/client'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,12 +22,17 @@ type CampaignInfluencerRef = {
 export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState<string | null>(null)
+  const [bulkLoading, setBulkLoading] = useState(false)
   const [influencers, setInfluencers] = useState<Influencer[]>([])
   const [addedInfluencerIds, setAddedInfluencerIds] = useState<Set<string>>(new Set())
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const router = useRouter()
 
   useEffect(() => {
-    if (!open) return
+    if (!open) {
+      setSelectedIds(new Set())
+      return
+    }
 
     const supabase = createClient()
 
@@ -53,6 +58,11 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
         next.add(influencerId)
         return next
       })
+      setSelectedIds((prev) => {
+        const next = new Set(prev)
+        next.delete(influencerId)
+        return next
+      })
       router.refresh()
     } catch (err) {
       console.error(err)
@@ -61,11 +71,37 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
     }
   }
 
+  const handleBulkAdd = async () => {
+    if (selectedIds.size === 0) return
+    setBulkLoading(true)
+    try {
+      const res = await bulkAddInfluencersToCampaign(campaignId, Array.from(selectedIds))
+      if (res && res.success) {
+        setAddedInfluencerIds((prev) => {
+          const next = new Set(prev)
+          selectedIds.forEach((id) => next.add(id))
+          return next
+        })
+        setSelectedIds(new Set())
+        router.refresh()
+      } else {
+        console.error(res?.error)
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setBulkLoading(false)
+    }
+  }
+
   function formatFollowers(count: number): string {
     if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`
     if (count >= 1000) return `${(count / 1000).toFixed(1)}K`
     return count.toString()
   }
+
+  const nonAddedInfluencers = influencers.filter((i) => !addedInfluencerIds.has(i.id))
+  const isAllSelected = nonAddedInfluencers.length > 0 && nonAddedInfluencers.every((i) => selectedIds.has(i.id))
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -81,44 +117,96 @@ export function AddInfluencerToCampaign({ campaignId }: { campaignId: string }) 
           description="Select creators from your pool to attach to this campaign."
           accent="blue"
         >
-        <div className="max-h-[52vh] space-y-2 overflow-y-auto pr-1">
-          {influencers.map((influencer) => {
-            const isAdded = addedInfluencerIds.has(influencer.id)
-            const isLoading = loading === influencer.id
+          {nonAddedInfluencers.length > 0 && (
+            <div className="mb-4 flex items-center justify-between border-b border-slate-150 pb-3">
+              <label className="flex cursor-pointer items-center gap-2.5 text-sm font-semibold text-slate-700 hover:text-slate-900">
+                <input
+                  type="checkbox"
+                  checked={isAllSelected}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedIds(new Set(nonAddedInfluencers.map((i) => i.id)))
+                    } else {
+                      setSelectedIds(new Set())
+                    }
+                  }}
+                  className="size-4 cursor-pointer rounded border-slate-350 bg-white text-teal-600 focus:ring-teal-500 focus:ring-offset-0"
+                />
+                Select All ({nonAddedInfluencers.length} available)
+              </label>
 
-            return (
-              <div
-                key={influencer.id}
-                className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 p-3 transition-colors hover:border-blue-200 hover:bg-blue-50"
-              >
-                <div className="flex min-w-0 items-center gap-3">
-                  <InitialAvatar name={influencer.name} tone="violet" size="sm" />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-slate-900">{influencer.name}</p>
-                    <p className="truncate text-xs text-slate-500">
-                      {formatFollowers(influencer.followers)} followers / {influencer.location || 'N/A'}
-                    </p>
-                  </div>
-                </div>
+              {selectedIds.size > 0 && (
                 <Button
                   size="sm"
-                  variant={isAdded ? 'secondary' : 'outline'}
-                  disabled={isLoading || isAdded}
-                  onClick={() => handleAdd(influencer.id)}
-                  className={isAdded ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-500' : 'cursor-pointer border-slate-200 text-slate-700 hover:bg-white hover:text-teal-700'}
+                  disabled={bulkLoading}
+                  onClick={handleBulkAdd}
+                  className="cursor-pointer bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2 text-xs font-semibold text-white shadow-md hover:from-emerald-500 hover:to-teal-400"
                 >
-                  {isLoading ? <Loader2 className="size-4 animate-spin" /> : null}
-                  {isLoading ? 'Adding' : isAdded ? 'Added' : 'Add'}
+                  {bulkLoading ? <Loader2 className="mr-1.5 size-3.5 animate-spin" /> : null}
+                  Add Selected ({selectedIds.size})
                 </Button>
-              </div>
-            )
-          })}
-          {influencers.length === 0 && (
-            <p className="py-8 text-center text-sm text-slate-500">No influencers in the pool yet.</p>
+              )}
+            </div>
           )}
-        </div>
+
+          <div className="max-h-[52vh] space-y-2 overflow-y-auto pr-1">
+            {influencers.map((influencer) => {
+              const isAdded = addedInfluencerIds.has(influencer.id)
+              const isLoading = loading === influencer.id
+
+              return (
+                <div
+                  key={influencer.id}
+                  className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 p-3 transition-colors hover:border-blue-200 hover:bg-blue-50"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    {!isAdded && (
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(influencer.id)}
+                        disabled={isLoading}
+                        onChange={(e) => {
+                          setSelectedIds((prev) => {
+                            const next = new Set(prev)
+                            if (e.target.checked) {
+                              next.add(influencer.id)
+                            } else {
+                              next.delete(influencer.id)
+                            }
+                            return next
+                          })
+                        }}
+                        className="size-4 cursor-pointer rounded border-slate-300 bg-white text-teal-600 focus:ring-teal-500 focus:ring-offset-0"
+                      />
+                    )}
+                    <InitialAvatar name={influencer.name} tone="violet" size="sm" />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-slate-900">{influencer.name}</p>
+                      <p className="truncate text-xs text-slate-500">
+                        {formatFollowers(influencer.followers)} followers / {influencer.location || 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={isAdded ? 'secondary' : 'outline'}
+                    disabled={isLoading || isAdded}
+                    onClick={() => handleAdd(influencer.id)}
+                    className={isAdded ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-500' : 'cursor-pointer border-slate-200 text-slate-700 hover:bg-white hover:text-teal-700'}
+                  >
+                    {isLoading ? <Loader2 className="size-4 animate-spin" /> : null}
+                    {isLoading ? 'Adding' : isAdded ? 'Added' : 'Add'}
+                  </Button>
+                </div>
+              )
+            })}
+            {influencers.length === 0 && (
+              <p className="py-8 text-center text-sm text-slate-500">No influencers in the pool yet.</p>
+            )}
+          </div>
         </PremiumDialogFrame>
       </DialogContent>
     </Dialog>
   )
 }
+

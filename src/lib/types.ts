@@ -43,6 +43,7 @@ export interface CampaignInfluencer {
   status: CampaignInfluencerStatus
   updated_by: string | null
   updated_at: string
+  comment: string | null
   // Joined fields
   influencers?: Influencer
   profiles?: Profile

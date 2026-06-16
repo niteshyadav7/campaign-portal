@@ -5,6 +5,7 @@ import { AddInfluencerToCampaign } from '@/components/add-influencer-to-campaign
 import { InfluencerStatusActions } from '@/components/influencer-status-actions'
 import { EditCampaignDialog } from '@/components/edit-campaign-dialog'
 import { DeleteCampaignDialog } from '@/components/delete-campaign-dialog'
+import { InfluencerCommentSection } from '@/components/influencer-comment-section'
 import { createClient } from '@/lib/server'
 import { EmptyState, InitialAvatar, MetricCard, PageHeader, PageSurface, StatusPill } from '@/components/premium-ui'
 import type { Influencer, Profile } from '@/lib/types'
@@ -24,6 +25,7 @@ type CampaignInfluencerView = {
   influencer_id: string
   status: keyof typeof statusConfig
   updated_at: string
+  comment: string | null
   influencers?: Influencer | null
   profiles?: Pick<Profile, 'full_name'> | null
 }
@@ -150,6 +152,12 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
                     currentStatus={ci.status}
                   />
                 </div>
+
+                <InfluencerCommentSection
+                  campaignId={ci.campaign_id}
+                  influencerId={ci.influencer_id}
+                  initialComment={ci.comment}
+                />
               </CardContent>
             </Card>
           ))}
